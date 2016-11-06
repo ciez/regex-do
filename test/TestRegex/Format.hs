@@ -8,6 +8,8 @@ import Regexdo.Format
 main::IO()
 main = hspec $ do
        describe "Habase.Bin.Format" $ do
+          it "list arg 0,0 repl []" $ do
+            format "на первое {0}, на второе {0}" ([]::[String]) `shouldBe` "на первое {0}, на второе {0}"
           it "list arg 0,0" $ do
             format "на первое {0}, на второе {0}" ["перловка"] `shouldBe` "на первое перловка, на второе перловка"
           it "list arg 0,1" $ do

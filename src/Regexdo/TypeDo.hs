@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveFunctor #-}
 module Regexdo.TypeDo where
 
 import Text.Regex.Base.RegexLike
@@ -13,3 +12,11 @@ data Haystack h = Haystack h deriving (Functor)                -- Bs, String
 data Replacement r = Replacement r deriving (Functor)     --    Bs, String
 
 type PosLen = (MatchOffset, MatchLength)
+
+
+data ReplaceCase = Once     -- ^ may be omitted
+                | All       -- ^ if both Once and All are passed, All prevails
+                | Utf8
+                | Multiline deriving Eq
+
+

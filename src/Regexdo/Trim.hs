@@ -1,11 +1,10 @@
 module Regexdo.Trim where
 
-import Regexdo.Pcre.Replace(replace,ReplaceCase(All))
 import Regexdo.TypeDo
 import Data.Char(isSpace)
 import qualified Data.ByteString as B
 import Regexdo.Convert
-
+import Regexdo.Pcre.Replace
 
 {- | removes leading and trailing spaces and tabs   -}
 

@@ -1,5 +1,5 @@
 name:                regex-do
-version:             1.0
+version:             1.1
 synopsis:            PCRE regex funs
 description:         Convenience functions to search, replace, format String | ByteString with PCRE regex
 author:              Imants Cekusins
@@ -9,7 +9,7 @@ license:             PublicDomain
 license-file:        PublicDomain
 cabal-version:       >=1.10
 build-type:          Simple
-
+homepage:            https://github.com/ciez/regex-do
 
 library
   exposed-modules:
@@ -24,14 +24,16 @@ library
           Regexdo.TypeRegex
           Regexdo.Convert
 
+  other-modules:
+
   ghc-options:  -fwarn-unused-imports
     
-  build-depends:  base >=4.8 && <4.9,
-              regex-base >= 0.93.2,
-              regex-pcre >= 0.94.4,
-              stringsearch >= 0.3.6.6,
-              bytestring >= 0.10.6.0,
-              array >= 0.5.1.0,
+  build-depends:  base,
+              regex-base,
+              regex-pcre,
+              stringsearch,
+              bytestring,
+              array,
               text
 
 
@@ -44,6 +46,8 @@ library
                         OverloadedStrings
                         FlexibleContexts
                         ConstraintKinds
+                        ScopedTypeVariables
+                        DeriveFunctor
                        
 
 test-suite spec
@@ -58,6 +62,8 @@ test-suite spec
                         OverloadedStrings
                         FlexibleContexts
                         ConstraintKinds
+                        ScopedTypeVariables
+                        DeriveFunctor
 
 
   main-is: Main.hs
@@ -68,13 +74,13 @@ test-suite spec
         TestRegex.StringSearch
         TestRegex.TestTrim
 
-  build-depends:  base >= 4.8,
-                  hspec >= 2.1.7,
-                  QuickCheck >= 2.8.1,
-                  regex-base >= 0.93.2,
-                  regex-pcre >= 0.94.4,
-                  stringsearch >= 0.3.6.6,
-                  bytestring >= 0.10.6.0,
-                  array >= 0.5.1.0,
+  build-depends:  base,
+                  hspec,
+                  QuickCheck,
+                  regex-base,
+                  regex-pcre,
+                  stringsearch,
+                  bytestring,
+                  array,
                   text,
                   regex-do

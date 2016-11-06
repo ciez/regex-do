@@ -14,7 +14,7 @@ module Regexdo.Search
     splitFront) where
 import qualified Data.ByteString.Search as S
 
-import Regexdo.TypeDo
+import Regexdo.TypeDo hiding (replace)
 import Data.ByteString as B hiding (break, breakEnd, split)
 import qualified Data.ByteString.Lazy as L
 import Prelude hiding (break)
@@ -23,7 +23,7 @@ import Prelude hiding (break)
 -- front:      a \nb
 -- end:        a\n b
 
-{- | lose needle
+{- | (front, end)  : drop needle
 
     >>> break (Needle ":") (Haystack "0123:oid:90")
 

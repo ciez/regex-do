@@ -3,9 +3,10 @@ module TestRegex.Pcre where
 
 import Test.Hspec
 import Regexdo.TypeDo
-import qualified Regexdo.Pcre.Match as M
+import Regexdo.Pcre.Match as M
 import qualified Regexdo.Pcre.Result as R
 import Regexdo.Convert
+
 
 
 main::IO()

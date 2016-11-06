@@ -11,9 +11,10 @@ import Data.ByteString
     see "Regexdo.Pcre.Result"
     for funs converting 'MatchArray' to something useful
 
-    'match' returns the first occurence - if any
+    'match' returns the first occurrence - if any
 
     -}
+
 
 class Match_ctr n h =>
             Match_cl n h where
@@ -26,6 +27,8 @@ class Match_ctr n h =>
 
    matchAll::Needle n -> Haystack h -> [MatchArray]
    matchAll r0 (Haystack b0) = R.matchAll (r_ r0) b0
+
+
 
 
 -- | tweak Regex with options
@@ -58,8 +61,6 @@ instance Match_cl Regex String
 instance Match_cl Regex ByteString
 
 
-class Needle_ r where
-   r_::Needle r -> Regex
 
 instance Needle_ ByteString where
    r_ (Needle r0) = R.makeRegex r0
@@ -74,3 +75,6 @@ instance Needle_ Regex where
 -- | _ctr: constraint
 type Match_ctr n h = (R.Extract h, Needle_ n, R.RegexLike Regex h)
 type Match_opt n = R.RegexMaker Regex CompOption ExecOption n
+
+class Needle_ r where
+   r_::Needle r -> Regex

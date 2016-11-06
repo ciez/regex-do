@@ -2,13 +2,11 @@
 module TestRegex.Replace where
 
 import Test.Hspec
-import Data.Array((!))
 import Regexdo.TypeDo
 
 import Regexdo.Pcre.Replace
 import Regexdo.Convert
 import Data.ByteString as B
-import Text.Regex.Base.RegexLike
 
 
 main::IO()
@@ -22,9 +20,18 @@ main = do
 doc::IO()
 doc = hspec $ do
        describe "Pcre.Replace doc" $ do
-          it "replace" $ do
-            replace [Once,Utf8] (Needle "поп", Replacement  "крестьянин") (Haystack "у попа была собака") `shouldBe` "у крестьянина была собака"
-
+          it "replaceGroup 1" $ do
+            replaceGroup [Once] (Needle "(\\w)(=)(\\d{1,3})", replacer) (Haystack "a=101 b=3 12")
+                `shouldBe` "a=[A] b=3 12"
+          it "replaceGroup 2" $ do
+            replaceGroup [All] (Needle "(\\w)(=)(\\d{1,3})", replacer) (Haystack "a=101 b=3 12")
+                `shouldBe` "a=[A] b=[Be] 12"
+          it "replace 3" $ do
+            replace [Once,Utf8] (Needle "менее", Replacement  "более") (Haystack "менее менее")
+                `shouldBe` "более менее"
+          it "replace 4" $ do
+            replace [Once,Utf8] (Needle "^a\\s", Replacement "A") (Haystack "a bc хол.гор.")
+                `shouldBe` "Abc хол.гор."
 
 
 onceUtf8::IO()
@@ -73,10 +80,7 @@ groupReplace =  hspec $ do
 
 
 replacer::GroupReplacer String
-replacer marr1 acc1 = case val1 of
-                          "101" -> fn1 "[A]"
-                          "3" -> fn1 "[Be]"
-   where ol1 = marr1 ! 3 :: (MatchOffset, MatchLength)
-         val1 = extract ol1 acc1
---         !val2 = trace (show val1) val1
-         fn1 str1 = replaceMatch ol1 (str1,acc1)
+replacer = defaultReplacer 3 tweak1
+      where tweak1 str1 = case str1 of
+                              "101" -> "[A]"
+                              "3" -> "[Be]"

@@ -4,7 +4,7 @@ import Prelude hiding(break)
 import Test.Hspec
 import Control.Exception (evaluate)
 import Regexdo.TypeDo
-import Regexdo.Search
+import Regexdo.Search as S
 import qualified Data.ByteString as B
 import Regexdo.Convert
 
@@ -21,7 +21,7 @@ main = hspec $ do
           it "break end" $ do
             breakEnd (Needle "\n") (Haystack "a\nbc\nde") `shouldBe` ("a\n", "bc\nde")
           it "replace" $ do
-            replace (Needle "\n") (Replacement ",") (Haystack "a\nbc\nde") `shouldBe` "a,bc,de"
+            S.replace (Needle "\n") (Replacement ",") (Haystack "a\nbc\nde") `shouldBe` "a,bc,de"
           it "split" $ do
             split (Needle "\n") (Haystack "a\nbc\nde") `shouldBe` ["a", "bc", "de"]
           it "split_sp" $ do
@@ -42,7 +42,7 @@ main = hspec $ do
           it "break end" $ do
             evaluate (errFn breakEnd) `shouldThrow` anyException
           it "replace" $ do
-            evaluate (replace (Needle B.empty) with body) `shouldThrow` anyException
+            evaluate (S.replace (Needle B.empty) with body) `shouldThrow` anyException
           it "split" $ do
             evaluate (errFn split) `shouldThrow` anyException
           it "split end" $ do
@@ -62,7 +62,7 @@ main = hspec $ do
                break1 = break pat body
                breakFront1 = breakFront pat body
                breakEnd1 = breakEnd pat body
-               replace1 = replace pat with body
+               replace1 = S.replace pat with body
                split1 = split pat body
                split_sp1 = split pat_sp body_sp
                splitFront1 = splitFront pat body
