@@ -1,9 +1,9 @@
 module Main where
 
-import qualified TestRegex.Format as F
-import qualified TestRegex.Pcre as P
-import qualified TestRegex.Replace as R
-import qualified TestRegex.StringSearch as S
+import qualified TestRegex.TestFormat as F
+import qualified TestRegex.TestPcre as P
+import qualified TestRegex.TestReplace as R
+import qualified TestRegex.TestSplit as S
 import qualified TestRegex.TestTrim as T
 
 

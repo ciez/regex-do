@@ -4,8 +4,8 @@ module TestRegex.TestTrim where
 import Test.Hspec
 import Debug.Trace
 import qualified Data.Text as T (strip, pack, unpack)
-import Regexdo.Trim
-import Regexdo.Convert
+import Text.Regex.Do.Trim
+import Text.Regex.Do.Convert
 
 
 main::IO()

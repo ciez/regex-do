@@ -1,7 +1,7 @@
 name:                regex-do
-version:             1.3
+version:             1.4
 synopsis:            PCRE wrapper
-description:         search, replace, format String | ByteString with PCRE regex Utf8-safe
+description:         format, search, replace (String | ByteString) with PCRE regex. Utf8-safe
 author:              Imants Cekusins
 maintainer:          Imants Cekusins
 category:            Regex, Search, String
@@ -13,16 +13,16 @@ homepage:            https://github.com/ciez/regex-do
 
 library
   exposed-modules:
-          Regexdo.Trim
-          Regexdo.Pcre.Match
-          Regexdo.Pcre.Option
-          Regexdo.Pcre.Replace
-          Regexdo.Pcre.Result
-          Regexdo.Search
-          Regexdo.Format
-          Regexdo.TypeDo
-          Regexdo.TypeRegex
-          Regexdo.Convert
+          Text.Regex.Do.Trim
+          Text.Regex.Do.Pcre.Match
+          Text.Regex.Do.Pcre.Option
+          Text.Regex.Do.Pcre.Replace
+          Text.Regex.Do.Pcre.Result
+          Text.Regex.Do.Split
+          Text.Regex.Do.Format
+          Text.Regex.Do.TypeDo
+          Text.Regex.Do.TypeRegex
+          Text.Regex.Do.Convert
 
   other-modules:
 
@@ -68,10 +68,10 @@ test-suite spec
 
   main-is: Main.hs
   other-modules:
-        TestRegex.Format
-        TestRegex.Pcre
-        TestRegex.Replace
-        TestRegex.StringSearch
+        TestRegex.TestFormat
+        TestRegex.TestPcre
+        TestRegex.TestReplace
+        TestRegex.TestSplit
         TestRegex.TestTrim
 
   build-depends:  base <= 5.0,
