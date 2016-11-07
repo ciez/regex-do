@@ -7,6 +7,7 @@ import Regexdo.TypeDo
 import Regexdo.Pcre.Replace
 import Regexdo.Convert
 import Data.ByteString as B
+import Debug.Trace
 
 
 main::IO()
@@ -21,11 +22,11 @@ doc::IO()
 doc = hspec $ do
        describe "Pcre.Replace doc" $ do
           it "replaceGroup 1" $ do
-            replaceGroup [Once] (Needle "(\\w)(=)(\\d{1,3})", replacer) (Haystack "a=101 b=3 12")
-                `shouldBe` "a=[A] b=3 12"
+            replaceGroup [Once,Utf8] (Needle "\\w=(\\d{1,3})", replacer) (Haystack "a=101 b=3 12")
+                `shouldBe` "a=[сто один] b=3 12"
           it "replaceGroup 2" $ do
-            replaceGroup [All] (Needle "(\\w)(=)(\\d{1,3})", replacer) (Haystack "a=101 b=3 12")
-                `shouldBe` "a=[A] b=[Be] 12"
+            replaceGroup [All,Utf8] (Needle "\\w=(\\d{1,3})", replacer) (Haystack "a=101 b=3 12")
+                `shouldBe` "a=[сто один] b=[three] 12"
           it "replace 3" $ do
             replace [Once,Utf8] (Needle "менее", Replacement  "более") (Haystack "менее менее")
                 `shouldBe` "более менее"
@@ -70,17 +71,18 @@ groupReplace::IO()
 groupReplace =  hspec $ do
          describe "Pcre.Replace group" $ do
             it "Once" $ do
-               runFn1 [Once] `shouldBe` "a=[A] b=3 12"
+               runFn1 [Once,Utf8] `shouldBe` "a=[сто один] b=3 12"
             it "All" $ do
-               runFn1 [All] `shouldBe` "a=[A] b=[Be] 12"
+               runFn1 [All,Utf8] `shouldBe` "a=[сто один] b=[three] 12"
             where runFn1 opts1 =
-                     let   rx1 = Needle "(\\w)(=)(\\d{1,3})"
+                     let   rx1 = Needle "\\w=(\\d{1,3})"
                            body1 = Haystack "a=101 b=3 12"
                      in replaceGroup opts1 (rx1,replacer) body1
 
 
 replacer::GroupReplacer String
-replacer = defaultReplacer 3 tweak1
+replacer = defaultReplacer 1 tweak1
       where tweak1 str1 = case str1 of
-                              "101" -> "[A]"
-                              "3" -> "[Be]"
+                              "101" -> "[сто один]"
+                              "3" -> "[three]"
+                              otherwise -> trace str1 "?"

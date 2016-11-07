@@ -3,7 +3,13 @@ module Regexdo.TypeDo where
 import Text.Regex.Base.RegexLike
 
 -- pcre
-type GroupReplacer acc = (MatchArray -> acc -> acc) -- MatchArray -> acc -> acc
+type GroupReplacer a = (MatchArray -> ReplaceAcc a -> ReplaceAcc a) -- MatchArray -> acc -> acc
+
+
+data ReplaceAcc a = ReplaceAcc {
+    acc_haystack::a,   -- ^ wip Haystack
+    position_adj::Int
+    }
 
 
 -- stringsearch, Pcre.Replace

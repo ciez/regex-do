@@ -3,10 +3,11 @@ module Regexdo.Pcre.Replace(
    Replace_cl(..),
    replaceMatch,
    defaultReplacer,
+   getGroup,
    Mr
    )  where
 
-import Data.Array
+import Data.Array as A
 import Data.ByteString
 import Prelude as P
 import qualified Data.ByteString as B
@@ -26,6 +27,7 @@ class Replace_cl' a where
    prefix::PosLen -> a -> a
    suffix::PosLen -> a -> a
    concat'::[a] -> a
+   len'::a -> Int
    toByteString'::a -> ByteString
    toA::ByteString -> a
 
@@ -58,32 +60,33 @@ class Replace_cl a where
    custom replacer fn returns replacement value
 
    >>> replacer::GroupReplacer String
-       replacer = defaultReplacer 3 tweak1
+       replacer = defaultReplacer 1 tweak1
              where tweak1 str1 = case str1 of
-                                  "101" -> "[A]"
-                                  "3" -> "[Be]"
-
+                                   "101" -> "[сто один]"
+                                   "3" -> "[three]"
+                                   otherwise -> trace str1 "?"
 
     'Once' vs 'All' options
 
-    >>> replaceGroup [Once] (Needle "(\\w)(=)(\\d{1,3})", replacer) $ Haystack "a=101 b=3 12"
+    >>> replaceGroup [Once,Utf8] (Needle "\\w=(\\d{1,3})", replacer) $ Haystack "a=101 b=3 12"
 
-        "a=[A] b=3 12"
+        "a=[сто один] b=3 12"
 
-    >>> replaceGroup [All] (Needle "(\\w)(=)(\\d{1,3})", replacer) $ Haystack "a=101 b=3 12"
+    >>> replaceGroup [All,Utf8] (Needle "\\w=(\\d{1,3})", replacer) $ Haystack "a=101 b=3 12"
 
-        "a=[A] b=[Be] 12"
+        "a=[сто один] b=[three] 12"
 
 
     == static replace for simple (no group) needle
 
-    >>> replace [Once,Utf8] (Needle "менее", Replacement  "более") (Haystack "менее менее")
+    >>> replace [Once,Utf8] (Needle "менее", Replacement  "более") $ Haystack "менее менее"
 
     "более менее"
 
-    >>> replace [Once,Utf8] (Needle "^a\\s", Replacement "A") (Haystack "a bc хол.гор.")
+    >>> replace [Once,Utf8] (Needle "^a\\s", Replacement "A") $ Haystack "a bc хол.гор."
 
     "Abc хол.гор."      -}
+
 
 instance Replace_cl String
 
@@ -95,6 +98,7 @@ instance Replace_cl' String where
    concat' = P.concat
    toByteString' = toByteString
    toA = toString
+   len' = P.length
 
 
 instance Replace_cl B.ByteString
@@ -107,81 +111,109 @@ instance Replace_cl' B.ByteString where
    concat' = B.concat
    toByteString' = id
    toA = id
+   len' = B.length
 
-
--- | use in your custom 'GroupReplacer' passed to 'replaceGroup'
---
--- see example replacer above or use 'defaultReplacer'
---
-replaceMatch::Replace_cl' a =>
-        (R.MatchOffset, R.MatchLength) ->
-        (a, a)  -- ^ (new val, acc passed to 'GroupReplacer')
-        -> a    -- ^ new acc
-replaceMatch pl1 (repl1, bs_str1) =
-     concat' [prefix1,repl1,suffix1]
-     where   prefix1 = prefix pl1 bs_str1
-             suffix1 = suffix pl1 bs_str1
 
 --  static
 ronce::Mr a =>
     (Needle Regex, Replacement a) -> Haystack a -> a
-ronce (pat1, Replacement repl1) body1@(Haystack bs_str1) =
+ronce (pat1, Replacement repl1) h1@(Haystack h0) =
       let pl2 = do
-               let m1 = match pat1 body1
+               let m1 = match pat1 h1
                poslen m1
       in case pl2 of
-         Nothing -> bs_str1
-         Just pl_arr -> firstGroup pl_arr (repl1,bs_str1)
+         Nothing -> h0
+         Just lpl1 -> firstGroup lpl1 (repl1, h0)
 
 
 rall::Mr a =>
     (Needle Regex, Replacement a) -> Haystack a -> a
-rall (pat1, Replacement repl1) body1@(Haystack bs_str1) =
-      let pl_arr_arr1 = do
-               let m1 = matchAll pat1 body1
-               poslen m1
-          folderFn pl_arr acc1 = firstGroup pl_arr (repl1,acc1)
-      in P.foldr folderFn bs_str1 pl_arr_arr1
+rall (pat1, Replacement repl1) h1@(Haystack h0) =
+      let lpl1 = do
+               let m1 = matchAll pat1 h1
+               poslen m1::[[PosLen]]
+          foldFn1 lpl1 acc1 = firstGroup lpl1 (repl1,acc1)
+      in P.foldr foldFn1 h0 lpl1
 
 
-firstGroup::Replace_cl' a =>
+firstGroup::(Replace_cl' a) =>
     [PosLen] -> (a,a) -> a
-firstGroup (pl1:_) r1@(repl1,bs_str1) = replaceMatch pl1 r1
+firstGroup (pl0:_) r1@(new0,a0) = acc_haystack $ replaceMatch pl0 (new0, acc1)
+    where acc1 = ReplaceAcc {
+                    acc_haystack = a0,
+                    position_adj = 0
+                    }
 
 
 --  dynamic
-{- | replace with a tweak to specified (by idx) group match
+{- | you can write a custom replacer. This is only one common use case.
 
-    see 'defaultReplacer' source for hints: how to write custom replacer
-     -}
+    Replaces specified (by idx) group match with tweaked value.     -}
 defaultReplacer::(Replace_cl' a, R.Extract a) =>
-        Int         -- ^ idx of match within a group
+        Int         -- ^ group idx
         -> (a -> a) -- ^ (group match -> replacement) tweak
             -> GroupReplacer a
-defaultReplacer idx0 tweak0 (ma0::MatchArray) acc0 =
-        if idx0 >= P.length ma0 then acc0     --  safety catch
-        else fn1 val1
-       where poslen1 = ma0 ! idx0 :: (R.MatchOffset, R.MatchLength)
-             val1 = extract poslen1 acc0
-             fn1 str1 = replaceMatch poslen1 (str2,acc0)
+defaultReplacer idx0 tweak0 (ma0::MatchArray) acc0 = maybe acc0 fn1 mval1
+       where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
+             mval1 = getGroup acc0 ma0 idx0
+             fn1 str1 = replaceMatch pl1 (str2, acc0)
                         where str2 = tweak0 str1
+
+
+{- | get group content safely
+
+    call from your custom 'GroupReplacer' passed to 'replaceGroup'
+    -}
+getGroup::R.Extract a =>
+    ReplaceAcc a -> MatchArray -> Int -> Maybe a
+getGroup acc0 ma0 idx0 = if idx0 >= P.length ma0 then Nothing     --  safety catch
+    else Just val1
+    where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
+          pl2 = adjustPoslen pl1 acc0
+          val1 = extract pl2 $ acc_haystack acc0
+
+
+adjustPoslen::PosLen -> ReplaceAcc a -> PosLen
+adjustPoslen (p0,l0) acc0  = (p0 + position_adj acc0, l0)
 
 
 ronceGroup::Match_cl Regex a =>
     (Needle Regex, GroupReplacer a) -> Haystack a -> a
-ronceGroup (pat1, repl1) body1@(Haystack bs_str1) =
-     let m1 = match pat1 body1
+ronceGroup (pat1, repl1) h1@(Haystack h0) =
+     let m1 = match pat1 h1::Maybe MatchArray
      in case m1 of
-            Nothing -> bs_str1
-            Just marr1 -> repl1 marr1 bs_str1
+            Nothing -> h0
+            Just ma1 -> let a1 = ReplaceAcc {
+                                    acc_haystack = h0,
+                                    position_adj = 0
+                                    }
+                        in acc_haystack $ repl1 ma1 a1
 
 
 rallGroup::Match_cl Regex a =>
     (Needle Regex, GroupReplacer a) -> Haystack a -> a
-rallGroup (pat1, repl1) body1@(Haystack bs_str1) =
-    let marrList1 = matchAll pat1 body1
-    in P.foldr repl1 bs_str1 marrList1
+rallGroup (pat1, repl1) h1@(Haystack h0) =
+    let ma1 = matchAll pat1 h1::[MatchArray]
+        acc1 = ReplaceAcc { acc_haystack = h0, position_adj = 0 }
+    in acc_haystack $ P.foldl (flip repl1) acc1 ma1
 
+
+{- | call from your custom 'GroupReplacer' passed to 'replaceGroup'
+
+     see example replacer above     -}
+replaceMatch::Replace_cl' a =>
+        PosLen      -- ^ replaced
+        -> (a, ReplaceAcc a)  -- ^ (new val, acc passed to 'GroupReplacer')
+        -> ReplaceAcc a    -- ^ new acc
+replaceMatch pl0@(_,l0) (new0, acc0) = ReplaceAcc {
+                    acc_haystack = acc1,
+                    position_adj = position_adj acc0 + l1 - l0
+                    }
+     where  pl1 = adjustPoslen pl0 acc0
+            prefix1 = prefix pl1 $ acc_haystack acc0
+            suffix1 = suffix pl1 $ acc_haystack acc0
+            acc1 = concat' [prefix1, new0, suffix1]
+            l1 = len' new0
 
 
 addOpt::Match_opt a =>

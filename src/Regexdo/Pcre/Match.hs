@@ -49,15 +49,15 @@ makeRegexOpts comp0 exec0 (Needle pat0) = rx1
 -}
 
 instance Match_cl String String
--- | this instance accepts regex 'String'
+-- | accepts regex 'String'
 instance Match_cl String ByteString
--- | this instance accepts regex 'ByteString'
+-- | accepts regex 'ByteString'
 instance Match_cl ByteString ByteString
--- | this instance accepts regex 'ByteString'
+-- | accepts regex 'ByteString'
 instance Match_cl ByteString String
--- | this instance accepts 'Regex' made with 'makeRegexOpts'
+-- | accepts 'Regex' made with 'makeRegexOpts'
 instance Match_cl Regex String
--- | this instance accepts 'Regex' made with 'makeRegexOpts'
+-- | accepts 'Regex' made with 'makeRegexOpts'
 instance Match_cl Regex ByteString
 
 

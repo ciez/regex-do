@@ -1,8 +1,8 @@
-{- | from stringsearch package
+{- | wraps functions from stringsearch package
 
     this module uses newtypes for args plus function names are tweaked
 
-    regex is treated as ordinary String. Do not use regex.
+    regex is treated as ordinary String
     -}
 module Regexdo.Search
     (break,
