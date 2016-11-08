@@ -14,16 +14,15 @@ import Data.ByteString as B
 import qualified Text.Regex.Do.Pcre.Option as O
 import qualified Text.Regex.Base.RegexLike as R
 import Text.Regex.Do.Convert
-import Text.Regex.Do.Pcre.Match
-import Text.Regex.Do.Pcre.Result
+import Text.Regex.Do.Pcre.Match as M
+import Text.Regex.Do.Pcre.Result as R
 import Text.Regex.Do.TypeDo
 import Text.Regex.Do.TypeRegex
+import Text.Regex.Do.Pcre.Matchf
 
 
-
-class Replace a where
-   replace::Mr_ a =>
-    [ReplaceCase] -> Pattern a -> Replacement a -> Body a -> a
+class Mr_ a [a] => Replace a where
+   replace::[ReplaceCase] -> Pattern a -> Replacement a -> Body a -> a
    replace cases0 pat0 repl0 hay0 =
         if isUtf8 cases0 then utfFn2
         else fn2 (pat2 pat0,repl0) hay0
@@ -35,8 +34,7 @@ class Replace a where
               cOpt1 = comp cases0
 
 
-   replaceGroup::Mr_ a =>
-        [ReplaceCase] -> Pattern a -> GroupReplacer a -> Body a -> a
+   replaceGroup::[ReplaceCase] -> Pattern a -> GroupReplacer a -> Body a -> a
    replaceGroup cases0 pat0 repl0 = fn1 pat2 repl0
         where pat2 = addOpt pat0 cOpt
               cOpt = comp cases0
@@ -114,21 +112,21 @@ instance Replace_ B.ByteString where
 
 
 --  static
-ronce::Mr_ a =>
+ronce::Mr_ a [a] =>
     (Pattern Regex, Replacement a) -> Body a -> a
 ronce (pat1, Replacement repl1) h1@(Body h0) =
-      let pl2 = let m1 = matchOnce' pat1 h1
-                in poslen m1
+      let pl2 = let m1 = marray_ pat1 h1
+                in R.poslen m1
       in case pl2 of
          Nothing -> h0
          Just lpl1 -> firstGroup lpl1 (repl1, h0)
 
 
-rall::Mr_ a =>
+rall::Mr_ a [a] =>
     (Pattern Regex, Replacement a) -> Body a -> a
 rall (pat1, Replacement repl1) h1@(Body h0) =
-      let lpl1 = let m1 = matchAll' pat1 h1
-                 in poslen m1::[[PosLen]]
+      let lpl1 = let m1 = marray_ pat1 h1
+                 in R.poslen m1::[[PosLen]]
           foldFn1 lpl1 acc1 = firstGroup lpl1 (repl1,acc1)
       in P.foldr foldFn1 h0 lpl1
 
@@ -174,10 +172,10 @@ adjustPoslen::PosLen -> ReplaceAcc a -> PosLen
 adjustPoslen (p0,l0) acc0  = (p0 + pos_adj acc0, l0)
 
 
-ronceGroup::ExplicitMatch Regex a =>
+ronceGroup::Rx_ a a =>
     Pattern Regex -> GroupReplacer a -> Body a -> a
 ronceGroup pat0 repl0 h1@(Body h0) =
-     let m1 = matchOnce' pat0 h1::Maybe MatchArray
+     let m1 = marray_ pat0 h1::Maybe MatchArray
      in case m1 of
             Nothing -> h0
             Just ma1 -> let a1 = ReplaceAcc {
@@ -187,10 +185,10 @@ ronceGroup pat0 repl0 h1@(Body h0) =
                         in acc $ repl0 ma1 a1
 
 
-rallGroup::ExplicitMatch Regex a =>
+rallGroup::Mr_ a [a] =>
     Pattern Regex -> GroupReplacer a -> Body a -> a
 rallGroup pat0 repl0 b1@(Body b0) =
-    let ma1 = matchAll' pat0 b1::[MatchArray]
+    let ma1 = marray_ pat0 b1::[MatchArray]
         acc1 = ReplaceAcc { acc = b0, pos_adj = 0 }
     in acc $ P.foldl (flip repl0) acc1 ma1
 
@@ -230,4 +228,4 @@ isUtf8::[ReplaceCase] -> Bool
 isUtf8 case0 = Utf8 `P.elem` case0
 
 
-type Mr_ a = (ExplicitMatch Regex a, Replace_ a, Opt_ a)
+type Mr_ a out = (Match a a out, Rx_ a a, Replace_ a, Opt_ a)

@@ -2,6 +2,7 @@ module Text.Regex.Do.TypeDo where
 
 import Text.Regex.Base.RegexLike as R
 import Text.Regex.Do.TypeRegex
+import Data.ByteString
 
 
 -- pcre
@@ -34,3 +35,17 @@ data ReplaceCase = Once     -- ^ may be omitted
 
 
 type Opt_ n = R.RegexMaker Regex CompOption ExecOption n
+type Rx_ n h = (R.Extract h, Regex_ n, R.RegexLike Regex h)
+
+
+class Regex_ r where
+   r_::Pattern r -> Regex
+
+instance Regex_ ByteString where
+   r_ (Pattern r0) = R.makeRegex r0
+
+instance Regex_ String where
+   r_ (Pattern r0) = R.makeRegex r0
+
+instance Regex_ Regex where
+   r_ (Pattern r0) = r0

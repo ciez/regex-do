@@ -1,6 +1,5 @@
 module Text.Regex.Do.Format
-    (pad,
-    Format(..)) where
+    (Format(..)) where
 
 import Prelude as P
 import Text.Regex.Do.TypeDo
@@ -49,14 +48,6 @@ replaceOne body k v = toString bs1
          repl1 = Replacement $ toByteString v
          bs1 = S.replace pat1 repl1 $ Body $ toByteString body
 
--- | pad String with Char to total length of Int
---
--- >>> pad '-' 5 "abc"
--- "--abc"
---
-pad::Char -> Int -> String -> String
-pad c0 tot0 txt0 =
-    [const c0 p1 | p1 <- [1..(tot0 - (P.length txt0))]] ++ txt0
 
 
 --  fold with index

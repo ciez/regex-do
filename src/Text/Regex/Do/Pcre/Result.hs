@@ -1,9 +1,4 @@
-module Text.Regex.Do.Pcre.Result
-    (poslen,
-    allMatches,
-    groupMatch,
-    R.extract   -- | 'extract' is reexport from "Text.Regex.Base.RegexLike"
-    ) where
+module Text.Regex.Do.Pcre.Result where
 
 import qualified Data.Array as A(elems)
 import Text.Regex.Base.RegexLike as R

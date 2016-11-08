@@ -1,5 +1,5 @@
 name:                regex-do
-version:             1.5
+version:             1.6
 synopsis:            PCRE wrapper
 description:         format, search, replace (String | ByteString) with PCRE regex. Utf8-safe
 author:              Imants Cekusins
@@ -17,14 +17,16 @@ library
           Text.Regex.Do.Pcre.Match
           Text.Regex.Do.Pcre.Option
           Text.Regex.Do.Pcre.Replace
-          Text.Regex.Do.Pcre.Result
           Text.Regex.Do.Split
           Text.Regex.Do.Format
           Text.Regex.Do.TypeDo
           Text.Regex.Do.TypeRegex
           Text.Regex.Do.Convert
+          Text.Regex.Do.Pad
 
   other-modules:
+          Text.Regex.Do.Pcre.Matchf
+          Text.Regex.Do.Pcre.Result
 
   ghc-options:  -fwarn-unused-imports
     
