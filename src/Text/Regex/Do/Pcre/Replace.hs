@@ -117,7 +117,7 @@ instance Replace_ B.ByteString where
 ronce::Mr_ a =>
     (Pattern Regex, Replacement a) -> Body a -> a
 ronce (pat1, Replacement repl1) h1@(Body h0) =
-      let pl2 = let m1 = matchOnce pat1 h1
+      let pl2 = let m1 = matchOnce' pat1 h1
                 in poslen m1
       in case pl2 of
          Nothing -> h0
@@ -127,7 +127,7 @@ ronce (pat1, Replacement repl1) h1@(Body h0) =
 rall::Mr_ a =>
     (Pattern Regex, Replacement a) -> Body a -> a
 rall (pat1, Replacement repl1) h1@(Body h0) =
-      let lpl1 = let m1 = matchAll pat1 h1
+      let lpl1 = let m1 = matchAll' pat1 h1
                  in poslen m1::[[PosLen]]
           foldFn1 lpl1 acc1 = firstGroup lpl1 (repl1,acc1)
       in P.foldr foldFn1 h0 lpl1
@@ -174,10 +174,10 @@ adjustPoslen::PosLen -> ReplaceAcc a -> PosLen
 adjustPoslen (p0,l0) acc0  = (p0 + pos_adj acc0, l0)
 
 
-ronceGroup::Match Regex a =>
+ronceGroup::ExplicitMatch Regex a =>
     Pattern Regex -> GroupReplacer a -> Body a -> a
 ronceGroup pat0 repl0 h1@(Body h0) =
-     let m1 = matchOnce pat0 h1::Maybe MatchArray
+     let m1 = matchOnce' pat0 h1::Maybe MatchArray
      in case m1 of
             Nothing -> h0
             Just ma1 -> let a1 = ReplaceAcc {
@@ -187,10 +187,10 @@ ronceGroup pat0 repl0 h1@(Body h0) =
                         in acc $ repl0 ma1 a1
 
 
-rallGroup::Match Regex a =>
+rallGroup::ExplicitMatch Regex a =>
     Pattern Regex -> GroupReplacer a -> Body a -> a
 rallGroup pat0 repl0 b1@(Body b0) =
-    let ma1 = matchAll pat0 b1::[MatchArray]
+    let ma1 = matchAll' pat0 b1::[MatchArray]
         acc1 = ReplaceAcc { acc = b0, pos_adj = 0 }
     in acc $ P.foldl (flip repl0) acc1 ma1
 
@@ -230,4 +230,4 @@ isUtf8::[ReplaceCase] -> Bool
 isUtf8 case0 = Utf8 `P.elem` case0
 
 
-type Mr_ a = (Match Regex a, Replace_ a, Opt_ a)
+type Mr_ a = (ExplicitMatch Regex a, Replace_ a, Opt_ a)

@@ -7,23 +7,44 @@ import Text.Regex.Do.TypeDo
 import Text.Regex.Do.Pcre.Option as O
 import Text.Regex.Do.TypeRegex
 import Data.ByteString
+import Text.Regex.Do.Pcre.Result
 
 
-{- | see "Text.Regex.Do.Pcre.Result"
-    to convert 'MatchArray' to something useful
-    -}
+{- | 'match' covers all 'ExplicitMatch' funs
+
+    compiler looks up the appropriate function depending on the result type    -}
+class ExplicitMatch n h => Match n h out where
+    match::Pattern n -> Body h -> out
+
+-- | 'matchOnce'
+instance ExplicitMatch n h => Match n h [h] where match = matchOnce
+-- | 'matchOnce''
+instance ExplicitMatch n h => Match n h (Maybe MatchArray) where match = matchOnce'
+-- | 'matchTest'
+instance ExplicitMatch n h => Match n h Bool where match = matchTest
+-- | 'matchAll'
+instance ExplicitMatch n h => Match n h [[h]] where match = matchAll
+-- | 'matchAll''
+instance ExplicitMatch n h => Match n h [MatchArray] where match = matchAll'
+
 
 class Rx_ n h =>
-            Match n h where
+            ExplicitMatch n h where
 
-   matchOnce::Pattern n -> Body h -> Maybe MatchArray
-   matchOnce r0 (Body b0) = R.matchOnce (r_ r0) b0
+   matchOnce::Pattern n -> Body h -> [h]      -- ^ matched content
+   matchOnce r0 b0 = maybe [] id $ allMatches b0 $ matchOnce' r0 b0
+
+   matchOnce'::Pattern n -> Body h -> Maybe MatchArray  -- ^ see "Text.Regex.Do.Pcre.Result"
+   matchOnce' r0 (Body b0) = R.matchOnce (r_ r0) b0
 
    matchTest::Pattern n -> Body h -> Bool
    matchTest r0 (Body b0) = R.matchTest (r_ r0) b0
 
-   matchAll::Pattern n -> Body h -> [MatchArray]
-   matchAll r0 (Body b0) = R.matchAll (r_ r0) b0
+   matchAll::Pattern n -> Body h -> [[h]]       -- ^ matched content
+   matchAll r0 b0 = allMatches b0 $ matchAll' r0 b0
+
+   matchAll'::Pattern n -> Body h -> [MatchArray]       -- ^ see "Text.Regex.Do.Pcre.Result"
+   matchAll' r0 (Body b0) = R.matchAll (r_ r0) b0
 
 
 
@@ -42,17 +63,17 @@ makeRegexOpts comp0 exec0 (Pattern pat0) = rx1
 
     True
 -}
-instance Match String String
+instance ExplicitMatch String String
 -- | accepts regex 'String'
-instance Match String ByteString
+instance ExplicitMatch String ByteString
 -- | accepts regex 'ByteString'
-instance Match ByteString ByteString
+instance ExplicitMatch ByteString ByteString
 -- | accepts regex 'ByteString'
-instance Match ByteString String
+instance ExplicitMatch ByteString String
 -- | accepts 'Regex' made with 'makeRegexOpts'
-instance Match Regex String
+instance ExplicitMatch Regex String
 -- | accepts 'Regex' made with 'makeRegexOpts'
-instance Match Regex ByteString
+instance ExplicitMatch Regex ByteString
 
 
 

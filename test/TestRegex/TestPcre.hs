@@ -11,10 +11,10 @@ import Text.Regex.Do.Convert
 
 main::IO()
 main = do
-   test " ?String " Pattern id M.matchOnce
-   test " [String] " Pattern id M.matchAll
-   test " ?Bs " (Pattern . b) (b <$>) M.matchOnce
-   test " [Bs] " (Pattern . b) (b <$>) M.matchAll
+   test " ?String " Pattern id M.matchOnce'
+   test " [String] " Pattern id M.matchAll'
+   test " ?Bs " (Pattern . b) (b <$>) M.matchOnce'
+   test " [Bs] " (Pattern . b) (b <$>) M.matchAll'
    hspec $ do
     describe " matchTest " $ do
      it " matchTest " $ do
