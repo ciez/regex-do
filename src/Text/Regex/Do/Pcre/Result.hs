@@ -11,12 +11,12 @@ poslen = (A.elems <$>)
 
 
 -- | all groups
-allMatches::(Functor f, R.Extract a) =>
-    Body a -> f MatchArray -> f [a]
+allMatches::(Functor f, R.Extract b) =>
+    Body b -> f MatchArray -> f [b]
 allMatches hay0 results0 = groupMatch hay0 <$> results0
 
 
 -- | matches for one group
-groupMatch::R.Extract a =>
-    Body a -> MatchArray -> [a]
-groupMatch (Body hay1) arr1 = [R.extract tuple1 hay1 |  tuple1 <- A.elems arr1]
+groupMatch::R.Extract b =>
+    Body b -> MatchArray -> [b]
+groupMatch (Body b0) a0 = [R.extract tuple1 b0 |  tuple1 <- A.elems a0]

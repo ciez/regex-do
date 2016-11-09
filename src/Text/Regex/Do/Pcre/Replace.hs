@@ -21,22 +21,25 @@ import Text.Regex.Do.TypeRegex
 import Text.Regex.Do.Pcre.Matchf
 
 
+type Mr_ a out = (Match a a out, Rx_ a a, Replace_ a, Opt_ a)
+
+
 class Mr_ a [a] => Replace a where
    replace::[ReplaceCase] -> Pattern a -> Replacement a -> Body a -> a
-   replace cases0 pat0 repl0 hay0 =
+   replace cases0 p0 repl0 b0 =
         if isUtf8 cases0 then utfFn2
-        else fn2 (pat2 pat0,repl0) hay0
+        else fn2 (pat2 p0,repl0) b0
         where fn1 = if P.elem All cases0 then rall else ronce
               fn2 = if P.elem All cases0 then rall else ronce
-              utfFn2 = let res1 = fn1 (pat2 $ toByteString' <$> pat0, toByteString' <$> repl0) $ toByteString' <$> hay0
+              utfFn2 = let res1 = fn1 (pat2 $ toByteString' <$> p0, toByteString' <$> repl0) $ toByteString' <$> b0
                        in toA res1
-              pat2 pat0 = addOpt pat0 cOpt1
+              pat2 p0 = addOpt p0 cOpt1
               cOpt1 = comp cases0
 
 
    replaceGroup::[ReplaceCase] -> Pattern a -> GroupReplacer a -> Body a -> a
-   replaceGroup cases0 pat0 repl0 = fn1 pat2 repl0
-        where pat2 = addOpt pat0 cOpt
+   replaceGroup cases0 p0 repl0 = fn1 pat2 repl0
+        where pat2 = addOpt p0 cOpt
               cOpt = comp cases0
               fn1 = if P.elem All cases0
                      then rallGroup
@@ -89,10 +92,10 @@ class Replace_ a where
 
 
 instance Replace_ String where
-   prefix pl1 = P.take $ fst pl1
-   suffix pl1 = P.drop (pos1 + len1)
-      where pos1 = fst pl1
-            len1 = snd pl1
+   prefix pl0 = P.take $ fst pl0
+   suffix pl0 = P.drop (pos1 + len1)
+      where pos1 = fst pl0
+            len1 = snd pl0
    concat' = P.concat
    toByteString' = toByteString
    toA = toString
@@ -101,10 +104,10 @@ instance Replace_ String where
 
 
 instance Replace_ B.ByteString where
-   prefix pl1 = B.take $ fst pl1
-   suffix pl1 = B.drop (pos1 + len1)
-      where pos1 = fst pl1
-            len1 = snd pl1
+   prefix pl0 = B.take $ fst pl0
+   suffix pl0 = B.drop (pos1 + len1)
+      where pos1 = fst pl0
+            len1 = snd pl0
    concat' = B.concat
    toByteString' = id
    toA = id
@@ -114,20 +117,20 @@ instance Replace_ B.ByteString where
 --  static
 ronce::Mr_ a [a] =>
     (Pattern Regex, Replacement a) -> Body a -> a
-ronce (pat1, Replacement repl1) h1@(Body h0) =
-      let pl2 = let m1 = marray_ pat1 h1
+ronce (p0, Replacement repl0) h1@(Body h0) =
+      let pl2 = let m1 = marray_ p0 h1
                 in R.poslen m1
       in case pl2 of
          Nothing -> h0
-         Just lpl1 -> firstGroup lpl1 (repl1, h0)
+         Just lpl1 -> firstGroup lpl1 (repl0, h0)
 
 
 rall::Mr_ a [a] =>
     (Pattern Regex, Replacement a) -> Body a -> a
-rall (pat1, Replacement repl1) h1@(Body h0) =
-      let lpl1 = let m1 = marray_ pat1 h1
+rall (p0, Replacement repl0) h1@(Body h0) =
+      let lpl1 = let m1 = marray_ p0 h1
                  in R.poslen m1::[[PosLen]]
-          foldFn1 lpl1 acc1 = firstGroup lpl1 (repl1,acc1)
+          foldFn1 lpl1 acc1 = firstGroup lpl1 (repl0,acc1)
       in P.foldr foldFn1 h0 lpl1
 
 
@@ -226,6 +229,3 @@ comp = P.map mapFn . P.filter filterFn
 
 isUtf8::[ReplaceCase] -> Bool
 isUtf8 case0 = Utf8 `P.elem` case0
-
-
-type Mr_ a out = (Match a a out, Rx_ a a, Replace_ a, Opt_ a)

@@ -6,20 +6,20 @@ import Data.ByteString
 
 
 -- pcre
-type GroupReplacer a = (MatchArray -> ReplaceAcc a -> ReplaceAcc a) -- MatchArray -> acc -> acc
+type GroupReplacer b = (MatchArray -> ReplaceAcc b -> ReplaceAcc b) -- MatchArray -> acc -> acc
 
 
-data ReplaceAcc a = ReplaceAcc {
-    acc::a,   -- ^ Body with some replacements made
+data ReplaceAcc b = ReplaceAcc {
+    acc::b,   -- ^ content with some replacements made
     pos_adj::Int    {- ^ position adjustment: group replacement length may differ from replaced text length -}
     }
 
 
 -- | Needle
-data Pattern n = Pattern n  deriving (Functor)          -- Bs, String, RegexPcre
+data Pattern a = Pattern a  deriving (Functor)          -- Bs, String, RegexPcre
 
 -- | Haystack
-data Body h = Body h deriving (Functor)                -- Bs, String
+data Body b = Body b deriving (Functor)                -- Bs, String
 
 data Replacement r = Replacement r deriving (Functor)     --    Bs, String
 
@@ -34,18 +34,18 @@ data ReplaceCase = Once     -- ^ may be omitted
 
 
 
-type Opt_ n = R.RegexMaker Regex CompOption ExecOption n
-type Rx_ n h = (R.Extract h, Regex_ n, R.RegexLike Regex h)
+type Opt_ a = R.RegexMaker Regex CompOption ExecOption a
+type Rx_ a b = (Regex_ a, R.Extract b, R.RegexLike Regex b)
 
 
-class Regex_ r where
-   r_::Pattern r -> Regex
+class Regex_ a where
+   r_::Pattern a -> Regex
 
 instance Regex_ ByteString where
-   r_ (Pattern r0) = R.makeRegex r0
+   r_ (Pattern p0) = R.makeRegex p0
 
 instance Regex_ String where
-   r_ (Pattern r0) = R.makeRegex r0
+   r_ (Pattern p0) = R.makeRegex p0
 
 instance Regex_ Regex where
-   r_ (Pattern r0) = r0
+   r_ (Pattern p0) = p0
