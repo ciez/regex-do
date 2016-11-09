@@ -3,7 +3,15 @@
     Run replacement with your preferred content types e.g. "Data.Text",
     from search results with non-PCRE regex or non-regex libs
 
-    open a bug or a PR on <https://github.com/ciez/regex-do git> to request a new 'ReplaceOpen' instance   -}
+    open a bug or a PR on <https://github.com/ciez/regex-do git> to request a new 'Extract'' instance
+
+    "Data.Text" instance already works
+
+    >>> replace (Just $ toArray [(4,3)]) (Replacement "4567") (Body "abc 123 def"::Body Text)
+
+    "abc 4567 def"
+
+    'GroupReplacer' can be used too     -}
 module Text.Regex.Do.Pcre.ReplaceOpen
     (ReplaceOpen(..),
     toArray,
@@ -20,6 +28,7 @@ import Prelude as P
 import Data.ByteString as B
 import Text.Regex.Do.TypeDo
 import Text.Regex.Do.Pcre.Result as R
+import Data.Text as T
 
 
 toArray::[PosLen] -> MatchArray
@@ -98,6 +107,16 @@ instance Extract' B.ByteString where
    len' = B.length
 
 
+instance Extract Text where
+    before = T.take
+    after = T.drop
+    empty = T.empty
+
+
+instance Extract' Text where
+    concat' = T.concat
+    len' = T.length
+
 
 --  dynamic
 {- | Replaces specified (by idx) group match with tweaked value.
@@ -106,7 +125,6 @@ instance Extract' B.ByteString where
     'GroupReplacer' can be used with complicated regex
 
     another custom dynamic replacer could e.g.
-
     inspect all group matches before looking up a replacement.     -}
 defaultReplacer::Extract' a =>
         Int         -- ^ group idx
