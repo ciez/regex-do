@@ -46,6 +46,8 @@ type Mr_ a out = (Match a a out, Rx_ a a, Replace_ a, Opt_ a)
 
     == static replace for simple (no group) needle
 
+    for no-regex 'ByteString' replacement see "Text.Regex.Do.Split"
+
     >>> replace [Once,Utf8] (Pattern "менее", Replacement  "более") $ Body "менее менее"
 
     "более менее"
@@ -150,9 +152,14 @@ firstGroup (pl0:_) r1@(new0,a0) = acc $ replaceMatch pl0 (new0, acc1)
 
 
 --  dynamic
-{- | you can write a custom replacer. This is only one common use case.
+{- | Replaces specified (by idx) group match with tweaked value.
+    Works for one common simple use case
 
-    Replaces specified (by idx) group match with tweaked value.     -}
+    'GroupReplacer' can be used with complicated regex
+
+    another custom dynamic replacer could e.g.
+
+    inspect all group matches before looking up a replacement.     -}
 defaultReplacer::(Replace_ a, R.Extract a) =>
         Int         -- ^ group idx
         -> (a -> a) -- ^ (group match -> replacement) tweak
@@ -167,7 +174,7 @@ defaultReplacer idx0 tweak0 = GroupReplacer fn1
 
 {- | get group content safely
 
-    call from your custom 'GroupReplacer' passed to 'replaceGroup'
+    see 'defaultReplacer' source for use example
     -}
 getGroup::R.Extract a =>
     ReplaceAcc a -> MatchArray -> Int -> Maybe a
@@ -205,7 +212,7 @@ rallGroup pat0 (GroupReplacer repl0) b1@(Body b0) =
 
 {- | call from your custom 'GroupReplacer' passed to 'replaceGroup'
 
-     see example replacer above     -}
+     see 'defaultReplacer' source for use example     -}
 replaceMatch::Replace_ a =>
         PosLen      -- ^ replaceable, unadjusted
         -> (a, ReplaceAcc a)  -- ^ (new val, acc passed to 'GroupReplacer')
