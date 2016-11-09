@@ -7,12 +7,11 @@ module Text.Regex.Do.Pcre.Replace(
    Mr_
    )  where
 
-
+import Text.Regex.Base.RegexLike as R
 import Data.Array as A
 import Prelude as P
 import Data.ByteString as B
 import qualified Text.Regex.Do.Pcre.Option as O
-import qualified Text.Regex.Base.RegexLike as R
 import Text.Regex.Do.Convert
 import Text.Regex.Do.Pcre.Match as M
 import Text.Regex.Do.Pcre.Result as R
@@ -24,29 +23,7 @@ import Text.Regex.Do.Pcre.Matchf
 type Mr_ a out = (Match a a out, Rx_ a a, Replace_ a, Opt_ a)
 
 
-class Mr_ a [a] => Replace a where
-   replace::[ReplaceCase] -> Pattern a -> Replacement a -> Body a -> a
-   replace cases0 p0 repl0 b0 =
-        if isUtf8 cases0 then utfFn2
-        else fn2 (pat2 p0,repl0) b0
-        where fn1 = if P.elem All cases0 then rall else ronce
-              fn2 = if P.elem All cases0 then rall else ronce
-              utfFn2 = let res1 = fn1 (pat2 $ toByteString' <$> p0, toByteString' <$> repl0) $ toByteString' <$> b0
-                       in toA res1
-              pat2 p0 = addOpt p0 cOpt1
-              cOpt1 = comp cases0
-
-
-   replaceGroup::[ReplaceCase] -> Pattern a -> GroupReplacer a -> Body a -> a
-   replaceGroup cases0 p0 repl0 = fn1 pat2 repl0
-        where pat2 = addOpt p0 cOpt
-              cOpt = comp cases0
-              fn1 = if P.elem All cases0
-                     then rallGroup
-                     else ronceGroup
-
-{- ^
-   == dynamic group replace
+{- | == dynamic group replace
    custom replacer fn returns replacement value
 
    >>> replacer::GroupReplacer String
@@ -58,11 +35,11 @@ class Mr_ a [a] => Replace a where
 
     'Once' vs 'All' options
 
-    >>> replaceGroup [Once,Utf8] (Pattern "\\w=(\\d{1,3})", replacer) $ Body "a=101 b=3 12"
+    >>> replace [Once,Utf8] (Pattern "\\w=(\\d{1,3})", replacer) $ Body "a=101 b=3 12"
 
         "a=[сто один] b=3 12"
 
-    >>> replaceGroup [All,Utf8] (Pattern "\\w=(\\d{1,3})", replacer) $ Body "a=101 b=3 12"
+    >>> replace [All,Utf8] (Pattern "\\w=(\\d{1,3})", replacer) $ Body "a=101 b=3 12"
 
         "a=[сто один] b=[three] 12"
 
@@ -78,8 +55,37 @@ class Mr_ a [a] => Replace a where
     "Abc хол.гор."      -}
 
 
-instance Replace String
-instance Replace B.ByteString
+class Replace r a where
+   replace::[ReplaceCase] -> Pattern a -> r a -> Body a -> a
+
+
+instance Replace Replacement String where replace = replace_
+instance Replace Replacement ByteString where replace = replace_
+instance Replace GroupReplacer String where replace = replaceG
+instance Replace GroupReplacer ByteString where replace = replaceG
+
+
+replace_::Mr_ a [a] =>
+    [ReplaceCase] -> Pattern a -> Replacement a -> Body a -> a
+replace_ cases0 p0 repl0 b0 =
+    if isUtf8 cases0 then utfFn2
+    else fn2 (pat2 p0,repl0) b0
+    where fn1 = if P.elem All cases0 then rall else ronce
+          fn2 = if P.elem All cases0 then rall else ronce
+          utfFn2 = let res1 = fn1 (pat2 $ toByteString' <$> p0, toByteString' <$> repl0) $ toByteString' <$> b0
+                   in toA res1
+          pat2 p0 = addOpt p0 cOpt1
+          cOpt1 = comp cases0
+
+
+replaceG::Mr_ a [a] =>
+    [ReplaceCase] -> Pattern a -> GroupReplacer a -> Body a -> a
+replaceG cases0 p0 repl0 = fn1 pat2 repl0
+    where pat2 = addOpt p0 cOpt
+          cOpt = comp cases0
+          fn1 = if P.elem All cases0
+                 then rallGroup
+                 else ronceGroup
 
 
 class Replace_ a where
@@ -134,7 +140,7 @@ rall (p0, Replacement repl0) h1@(Body h0) =
       in P.foldr foldFn1 h0 lpl1
 
 
-firstGroup::(Replace_ a) =>
+firstGroup::Replace_ a =>
     [PosLen] -> (a,a) -> a
 firstGroup (pl0:_) r1@(new0,a0) = acc $ replaceMatch pl0 (new0, acc1)
     where acc1 = ReplaceAcc {
@@ -151,11 +157,12 @@ defaultReplacer::(Replace_ a, R.Extract a) =>
         Int         -- ^ group idx
         -> (a -> a) -- ^ (group match -> replacement) tweak
             -> GroupReplacer a
-defaultReplacer idx0 tweak0 (ma0::MatchArray) acc0 = maybe acc0 fn1 mval1
-       where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
-             mval1 = getGroup acc0 ma0 idx0
-             fn1 str1 = replaceMatch pl1 (str2, acc0)
-                        where str2 = tweak0 str1
+defaultReplacer idx0 tweak0 = GroupReplacer fn1
+    where fn1 (ma0::MatchArray) acc0 = maybe acc0 fn1 mval1
+                where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
+                      mval1 = getGroup acc0 ma0 idx0
+                      fn1 str1 = replaceMatch pl1 (str2, acc0)
+                                 where str2 = tweak0 str1
 
 
 {- | get group content safely
@@ -177,7 +184,7 @@ adjustPoslen (p0,l0) acc0  = (p0 + pos_adj acc0, l0)
 
 ronceGroup::Rx_ a a =>
     Pattern Regex -> GroupReplacer a -> Body a -> a
-ronceGroup pat0 repl0 h1@(Body h0) =
+ronceGroup pat0 (GroupReplacer repl0) h1@(Body h0) =
      let m1 = marray_ pat0 h1::Maybe MatchArray
      in case m1 of
             Nothing -> h0
@@ -190,7 +197,7 @@ ronceGroup pat0 repl0 h1@(Body h0) =
 
 rallGroup::Mr_ a [a] =>
     Pattern Regex -> GroupReplacer a -> Body a -> a
-rallGroup pat0 repl0 b1@(Body b0) =
+rallGroup pat0 (GroupReplacer repl0) b1@(Body b0) =
     let ma1 = marray_ pat0 b1::[MatchArray]
         acc1 = ReplaceAcc { acc = b0, pos_adj = 0 }
     in acc $ P.foldl (flip repl0) acc1 ma1
@@ -217,7 +224,7 @@ replaceMatch pl0@(_,l0) (new0, acc0) = ReplaceAcc {
 addOpt::Opt_ a =>
     Pattern a -> [O.Comp] -> Pattern Regex
 addOpt pat0 opt0 = Pattern rx1
-    where rx1 = makeRegexOpts opt0 [] pat0
+    where rx1 = M.makeRegexOpts opt0 [] pat0
 
 
 comp::[ReplaceCase]-> [O.Comp]

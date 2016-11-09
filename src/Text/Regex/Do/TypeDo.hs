@@ -6,7 +6,7 @@ import Data.ByteString
 
 
 -- pcre
-type GroupReplacer b = (MatchArray -> ReplaceAcc b -> ReplaceAcc b) -- MatchArray -> acc -> acc
+newtype GroupReplacer b = GroupReplacer (MatchArray -> ReplaceAcc b -> ReplaceAcc b) -- MatchArray -> acc -> acc
 
 
 data ReplaceAcc b = ReplaceAcc {

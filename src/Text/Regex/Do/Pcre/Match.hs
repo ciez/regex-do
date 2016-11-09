@@ -23,7 +23,9 @@ import Text.Regex.PCRE.Wrap()
 
 class Match a b out where
     match::Pattern a -> Body b -> out
-    (=~)::a -> b -> out
+    (=~)::a     -- ^ pattern
+        -> b    -- ^ body
+        -> out
     (=~) p0 b0 = match (Pattern p0) (Body b0)
 
 

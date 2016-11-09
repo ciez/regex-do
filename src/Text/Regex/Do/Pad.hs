@@ -4,6 +4,8 @@ module Text.Regex.Do.Pad
 
 {- | pad String with Char to total length of Int
 
+    pad on left
+
  >>> pad '-' 5 "abc"
 
  "--abc"    -}
@@ -12,7 +14,10 @@ pad::Char -> Int -> String -> String
 pad c0 tot0 txt0 = p1 ++ txt0
     where p1 = pad_ c0 tot0 txt0
 
-{- |>>> pad' '-' 5 "abc"
+
+{- | pad on right
+
+    >>> pad' '-' 5 "abc"
 
      "abc--"        -}
 pad'::Char -> Int -> String -> String

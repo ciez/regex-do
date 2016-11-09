@@ -22,10 +22,10 @@ doc::IO()
 doc = hspec $ do
        describe "Pcre.Replace doc" $ do
           it "replaceGroup 1" $ do
-            replaceGroup [Once,Utf8] (Pattern "\\w=(\\d{1,3})") replacer (Body "a=101 b=3 12")
+            replace [Once,Utf8] (Pattern "\\w=(\\d{1,3})") replacer (Body "a=101 b=3 12")
                 `shouldBe` "a=[сто один] b=3 12"
           it "replaceGroup 2" $ do
-            replaceGroup [All,Utf8] (Pattern "\\w=(\\d{1,3})") replacer (Body "a=101 b=3 12")
+            replace [All,Utf8] (Pattern "\\w=(\\d{1,3})") replacer (Body "a=101 b=3 12")
                 `shouldBe` "a=[сто один] b=[three] 12"
           it "replace 3" $ do
             replace [Once,Utf8] (Pattern "менее") (Replacement  "более") (Body "менее менее")
@@ -80,7 +80,7 @@ groupReplace =  hspec $ do
             where runFn1 opts1 =
                      let   rx1 = Pattern "\\w=(\\d{1,3})"
                            body1 = Body "a=101 b=3 12"
-                     in replaceGroup opts1 rx1 replacer body1
+                     in replace opts1 rx1 replacer body1
 
 
 replacer::GroupReplacer String
