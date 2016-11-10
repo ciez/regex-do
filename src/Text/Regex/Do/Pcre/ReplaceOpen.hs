@@ -3,15 +3,10 @@
     Run replacement with your preferred content types e.g. "Data.Text",
     from search results with non-PCRE regex or non-regex libs
 
-    open a bug or a PR on <https://github.com/ciez/regex-do git> to request a new 'Extract'' instance
+    open an issue or a PR on <https://github.com/ciez/regex-do git> to request a new 'Extract'' instance
 
-    "Data.Text" instance already works
+    "Data.Text" instance already works  -}
 
-    >>> replace (Just [(4,3)::PosLen]) (Replacement "4567") (Body "abc 123 def"::Body Text)
-
-    "abc 4567 def"
-
-    'GroupReplacer' can be used too     -}
 module Text.Regex.Do.Pcre.ReplaceOpen
     (ReplaceOpen(..),
     defaultReplacer,
@@ -28,6 +23,25 @@ import Text.Regex.Do.Pcre.Result as R
 import Text.Regex.Do.Convert
 import Text.Regex.Do.Type.Extract
 
+
+{- | 'Replacement':
+
+    >>> replace (Just [(4,3)::PosLen]) (Replacement "4567") (Body "abc 123 def"::Body Text)
+
+    "abc 4567 def"
+
+
+    'GroupReplacer' :
+
+    >>> replacer::GroupReplacer Text
+        replacer = defaultReplacer 1 tweak1        --  1: first match in group
+              where tweak1 str1 = case str1 of
+                                    "123" -> "[1-2-3]"
+                                    otherwise -> traceShow str1 "?"
+
+    >>> replace (Just ([(4,3),(8,2)]::[PosLen])) replacer (Body "abc 123 def"::Body Text)
+
+        "abc [1-2-3] def"     -}
 
 class ReplaceOpen f r where
    replace::(Extract' a, ToArray arr) =>
