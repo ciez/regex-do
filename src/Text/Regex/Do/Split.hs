@@ -9,7 +9,7 @@ module Text.Regex.Do.Split
     KeepNeedle(..)) where
 
 import qualified Data.ByteString.Search as S
-import Text.Regex.Do.TypeDo hiding (replace)
+import Text.Regex.Do.Type.Do hiding (replace)
 import Data.ByteString as B hiding (break, breakEnd, split)
 import qualified Data.ByteString.Lazy as L
 import Prelude hiding (break)

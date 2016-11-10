@@ -1,10 +1,11 @@
 -- | __internal__ module, exposed only to show the instances
 module Text.Regex.Do.Pcre.Matchf where
 
-import Text.Regex.Do.TypeDo
-import Text.Regex.Do.TypeRegex
+import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Reexport
 import qualified Text.Regex.Do.Pcre.Result as R
 import qualified Text.Regex.Base.RegexLike as R hiding (makeRegex)
+import Text.Regex.Do.Type.Regex_
 
 
 class (Rx_ a b, Functor f) => Matchf f a b where

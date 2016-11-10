@@ -1,7 +1,7 @@
 module TestRegex.TestPcre where
 
 import Test.Hspec
-import Text.Regex.Do.TypeDo as M
+import Text.Regex.Do.Type.Do as M
 import Text.Regex.Do.Pcre.Match as M
 import Text.Regex.Do.Convert
 import Data.ByteString

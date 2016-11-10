@@ -2,7 +2,7 @@ module Text.Regex.Do.Format
     (Format(..)) where
 
 import Prelude as P
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Split as S (replace)
 import Text.Regex.Do.Convert
 

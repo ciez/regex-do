@@ -1,5 +1,5 @@
 -- | reexport common types from "Text.Regex.PCRE"
-module Text.Regex.Do.TypeRegex (
+module Text.Regex.Do.Type.Reexport (
     W.Regex(..),
     R.MatchArray(..),
     W.CompOption(..),

@@ -5,11 +5,12 @@ module Text.Regex.Do.Pcre.Match
     makeRegexOpts) where
 
 import qualified Text.Regex.Base.RegexLike as R hiding (makeRegex)
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Pcre.Option as O
-import Text.Regex.Do.TypeRegex
+import Text.Regex.Do.Type.Reexport
 import Text.Regex.Do.Pcre.Matchf as F
 import Text.Regex.PCRE.Wrap()
+import Text.Regex.Do.Type.Regex_
 
 
 {- | 'match' covers all result types

@@ -2,7 +2,7 @@ module Text.Regex.Do.Pcre.Result where
 
 import qualified Data.Array as A(elems)
 import Text.Regex.Base.RegexLike as R
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 
 -- | match offset, length
 poslen::Functor f =>

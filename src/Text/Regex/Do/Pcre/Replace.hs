@@ -7,16 +7,17 @@ import Prelude as P
 import Data.ByteString as B
 import qualified Text.Regex.Do.Pcre.Option as O
 import Text.Regex.Do.Pcre.Match as M
-import Text.Regex.Do.TypeDo
-import Text.Regex.Do.TypeRegex
+import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Reexport
 import Text.Regex.Do.Pcre.Matchf
 import qualified Text.Regex.Do.Pcre.ReplaceOpen as O
 import Text.Regex.Do.Convert
-
+import Text.Regex.Do.Type.Regex_
+import Text.Regex.Do.Type.Extract
 
 
 {- | == dynamic group replace
-   custom replacer fn returns replacement value
+   custom replacer fn returns replacement value. See 'O.defaultReplacer'
 
    >>> replacer::GroupReplacer String
        replacer = defaultReplacer 1 tweak1
@@ -56,6 +57,7 @@ replace case0 p0 r0 b0 = replace_ case0 p1 r0 b0
           p1 = addOpt p0 opt1
 
 
+-- | implementation detail for the curious
 class ReplaceCase_ r a where
     replace_::[ReplaceCase] -> Pattern Regex -> r a -> Body a -> a
 
@@ -84,7 +86,7 @@ instance ReplaceCase_ GroupReplacer String where
 
 
 vanilla_replace::(O.ReplaceOpen [] r, O.ReplaceOpen Maybe r,
-    O.Extract' a,Rx_ a a,Opt_ a) =>
+    Extract' a,Rx_ a a,Opt_ a) =>
         [ReplaceCase] -> Pattern Regex -> r a -> Body a -> a
 vanilla_replace case0 p0 r0 b0 =
    let ma1 = marray_ p0 b0::Maybe MatchArray

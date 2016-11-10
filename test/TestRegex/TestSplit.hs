@@ -3,7 +3,7 @@ module TestRegex.TestSplit where
 import Prelude hiding(break)
 import Test.Hspec
 import Control.Exception (evaluate)
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Split as S
 import qualified Data.ByteString as B
 import Text.Regex.Do.Convert

@@ -1,6 +1,6 @@
 module Text.Regex.Do.Trim where
 
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 import Data.Char(isSpace)
 import qualified Data.ByteString as B
 import Text.Regex.Do.Convert

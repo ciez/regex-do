@@ -7,15 +7,13 @@
 
     "Data.Text" instance already works
 
-    >>> replace (Just $ toArray [(4,3)]) (Replacement "4567") (Body "abc 123 def"::Body Text)
+    >>> replace (Just [(4,3)::PosLen]) (Replacement "4567") (Body "abc 123 def"::Body Text)
 
     "abc 4567 def"
 
     'GroupReplacer' can be used too     -}
 module Text.Regex.Do.Pcre.ReplaceOpen
     (ReplaceOpen(..),
-    toArray,
-    Extract'(..),
     defaultReplacer,
     getGroup,
     replaceMatch
@@ -25,48 +23,27 @@ module Text.Regex.Do.Pcre.ReplaceOpen
 import Text.Regex.Base.RegexLike as R
 import Data.Array as A
 import Prelude as P
-import Data.ByteString as B
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Pcre.Result as R
-import Data.Text as T
-
-
-toArray::[PosLen] -> MatchArray
-toArray [] = listArray (0,0) []
-toArray lpl0 = listArray (1, P.length lpl0) lpl0
-
-
-{- | see String, ByteString instances for implementation examples
-
-    see "Text.Regex.Base.RegexLike" for 'Extract' detail        -}
-class Extract a => Extract' a where
-   concat'::[a] -> a
-   len'::a -> Int
-
-
-prefix::Extract a => PosLen -> a -> a
-prefix pl0 = before $ fst pl0
-
-suffix::Extract a => PosLen -> a -> a
-suffix pl0 = after (pos1 + len1)
-  where pos1 = fst pl0
-        len1 = snd pl0
+import Text.Regex.Do.Convert
+import Text.Regex.Do.Type.Extract
 
 
 class ReplaceOpen f r where
-   replace::Extract' a => f MatchArray -> r a -> Body a -> a
+   replace::(Extract' a, ToArray arr) =>
+        f arr -> r a -> Body a -> a
 
 
 instance ReplaceOpen Maybe Replacement where
    replace Nothing (Replacement repl0) (Body b0) = b0
    replace (Just ma0) (Replacement repl0) (Body b0) = firstGroup lpl1 (repl0, b0)
-        where lpl1 = A.elems ma0
+        where lpl1 = A.elems $ toArray ma0
 
 
 instance ReplaceOpen [] Replacement where
    replace [] _ (Body b0) = b0
    replace ma0 (Replacement repl0) (Body b0) =
-      let lpl1 = R.poslen ma0::[[PosLen]]
+      let lpl1 = R.poslen $ toArray <$> ma0::[[PosLen]]
           foldFn1 lpl1 acc1 = firstGroup lpl1 (repl0,acc1)
       in P.foldr foldFn1 b0 lpl1
 
@@ -78,14 +55,14 @@ instance ReplaceOpen Maybe GroupReplacer where
                                   acc = b0,
                                   pos_adj = 0
                                 }
-            in acc $ repl0 ma0 a1
+            in acc $ repl0 (toArray ma0) a1
 
 
 instance ReplaceOpen [] GroupReplacer where
    replace [] _ (Body b0) = b0
    replace ma0 (GroupReplacer repl0) (Body b0) =
         let acc1 = ReplaceAcc { acc = b0, pos_adj = 0 }
-        in acc $ P.foldl (flip repl0) acc1 ma0
+        in acc $ P.foldl (flip repl0) acc1 $ toArray <$> ma0
 
 
 firstGroup::Extract' a =>
@@ -96,26 +73,6 @@ firstGroup (pl0:_) r1@(new0,a0) = acc $ replaceMatch pl0 (new0, acc1)
                     pos_adj = 0
                     }
 
-
-instance Extract' String where
-   concat' = P.concat
-   len' = P.length
-
-
-instance Extract' B.ByteString where
-   concat' = B.concat
-   len' = B.length
-
-
-instance Extract Text where
-    before = T.take
-    after = T.drop
-    empty = T.empty
-
-
-instance Extract' Text where
-    concat' = T.concat
-    len' = T.length
 
 
 --  dynamic

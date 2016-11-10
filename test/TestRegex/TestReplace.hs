@@ -2,7 +2,7 @@
 module TestRegex.TestReplace where
 
 import Test.Hspec
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 
 import Text.Regex.Do.Pcre.Replace as R
 import Text.Regex.Do.Pcre.ReplaceOpen hiding (replace)

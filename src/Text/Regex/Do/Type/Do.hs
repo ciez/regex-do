@@ -1,11 +1,10 @@
-module Text.Regex.Do.TypeDo where
+module Text.Regex.Do.Type.Do where
 
 import Text.Regex.Base.RegexLike as R
-import Text.Regex.Do.TypeRegex
-import Data.ByteString
+import Text.Regex.Do.Type.Reexport
 
 
--- pcre
+-- | see "Text.Regex.Do.Pcre.ReplaceOpen" 'defaultReplacer' for example implementation
 newtype GroupReplacer b = GroupReplacer (MatchArray -> ReplaceAcc b -> ReplaceAcc b) -- MatchArray -> acc -> acc
 
 
@@ -33,19 +32,4 @@ data ReplaceCase = Once     -- ^ may be omitted
                 | Multiline deriving Eq
 
 
-
 type Opt_ a = R.RegexMaker Regex CompOption ExecOption a
-type Rx_ a b = (Regex_ a, R.Extract b, R.RegexLike Regex b)
-
-
-class Regex_ a where
-   r_::Pattern a -> Regex
-
-instance Regex_ ByteString where
-   r_ (Pattern p0) = R.makeRegex p0
-
-instance Regex_ String where
-   r_ (Pattern p0) = R.makeRegex p0
-
-instance Regex_ Regex where
-   r_ (Pattern p0) = p0

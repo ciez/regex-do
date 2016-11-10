@@ -1,6 +1,6 @@
 module Text.Regex.Do.Pcre.MatchSame where
 
-import Text.Regex.Do.TypeDo
+import Text.Regex.Do.Type.Do
 import Text.Regex.PCRE.Wrap()
 import Text.Regex.Do.Pcre.Match
 import Data.ByteString
