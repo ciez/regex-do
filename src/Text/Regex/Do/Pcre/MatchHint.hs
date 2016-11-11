@@ -4,7 +4,7 @@
     this module is similar to "Text.Regex.Do.Pcre.Match". The differences are:
 
     "Text.Regex.Do.Pcre.Match" is more flexible:
-        accepts 'Pattern' 'Regex',
+        accepts 'Pattern' Regex,
         accepts 'Pattern' and 'Body' of different types
 
     "Text.Regex.Do.Pcre.Match" needs to infer result type

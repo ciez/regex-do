@@ -1,7 +1,6 @@
 module Text.Regex.Do.Type.Do where
 
 import Text.Regex.Base.RegexLike as R
-import Text.Regex.Do.Type.Reexport
 
 
 -- | see "Text.Regex.Do.Pcre.ReplaceOpen" 'defaultReplacer' for example implementation
@@ -24,12 +23,3 @@ data Replacement r = Replacement r deriving (Functor)     --    Bs, String
 
 -- | Offset, Length
 type PosLen = (MatchOffset, MatchLength)
-
-
-data ReplaceCase = Once     -- ^ may be omitted
-                | All       -- ^ if both Once and All are passed, All prevails
-                | Utf8
-                | Multiline deriving Eq
-
-
-type Opt_ a = R.RegexMaker Regex CompOption ExecOption a

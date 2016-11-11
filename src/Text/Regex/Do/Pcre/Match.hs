@@ -6,8 +6,6 @@ module Text.Regex.Do.Pcre.Match
 
 import qualified Text.Regex.Base.RegexLike as R hiding (makeRegex)
 import Text.Regex.Do.Type.Do
-import Text.Regex.Do.Pcre.Option as O
-import Text.Regex.Do.Type.Reexport
 import Text.Regex.Do.Pcre.Matchf as F
 import Text.Regex.PCRE.Wrap()
 import Text.Regex.Do.Type.Regex_
@@ -72,12 +70,3 @@ instance Rx_ a b => Match a b [PosLen] where
 instance Rx_ a b => Match a b [[PosLen]] where
     match = poslen_
 
-
-
--- | tweak Regex with options
-makeRegexOpts::Opt_ a =>
-    [O.Comp] -> [O.Exec] -> Pattern a -> Regex
-makeRegexOpts comp0 exec0 (Pattern pat0) = rx1
-   where c1 = O.comp comp0
-         e1 = O.exec exec0
-         rx1 = R.makeRegexOpts c1 e1 pat0

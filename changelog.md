@@ -1,3 +1,6 @@
+#####   2.4
+  refactor Replace: remove ReplaceCase. Use Once | All hints instead  
+ 
 #####   2.3 
   include missing TestReplaceOpen 
     
@@ -26,4 +29,30 @@
 
 #####   1.7 
   add MatchSame
-                                   
+
+#####   1.6
+  rollup all match fns into one class
+  add Matchf, Pad
+
+#####   1.5
+  rename Match class -> ExplicitMatch
+
+#####   1.4
+  *API changes*
+  changed namespace                                         
+
+#####   1.3
+  fix bug in replace
+  docs
+  base version constraint
+  
+    
+there is no 1.2 version
+  
+#####   1.1
+  refactor Replace  
+  ! buggy replace
+
+#####   1.0
+  initial version 
+  ! buggy replace         
