@@ -1,4 +1,4 @@
--- | see "Text.Regex.Base.RegexLike"
+-- | see "Text.Regex.Base.RegexLike" and "Text.Regex.Do.Pcre.MatchHint"
 module Text.Regex.Do.Pcre.Match
     (Match(..),
     R.extract,   -- | 'extract' is reexport from "Text.Regex.Base.RegexLike"
@@ -20,7 +20,7 @@ import Text.Regex.Do.Type.Regex_
     '=~' is borrowed from "Text.Regex.PCRE.Wrap",
     is a short version of 'match'
 
-    See also "Text.Regex.Do.Pcre.MatchSame"       -}
+    See also "Text.Regex.Do.Pcre.MatchHint"       -}
 
 class Match a b out where
     match::Pattern a -> Body b -> out
@@ -37,7 +37,7 @@ instance Rx_ a b => Match a b [b] where
 
      \["all"\]
 
-     "Text.Regex.Do.Pcre.MatchSame"     -}
+     "Text.Regex.Do.Pcre.MatchHint"     -}
 instance Rx_ a b => Match a b Bool where
     match p0 (Body b0) = R.matchTest (r_ p0) b0
 {- ^ test
@@ -46,7 +46,7 @@ instance Rx_ a b => Match a b Bool where
 
     True
 
-    "Text.Regex.Do.Pcre.MatchSame"      -}
+    "Text.Regex.Do.Pcre.MatchHint"      -}
 
 -- | match all
 instance Rx_ a b => Match a b [[b]] where
@@ -55,7 +55,7 @@ instance Rx_ a b => Match a b [[b]] where
 
      \[["well"\],\["well"\]]
 
-     "Text.Regex.Do.Pcre.MatchSame"    -}
+     "Text.Regex.Do.Pcre.MatchHint"    -}
 
 -- | match once
 instance Rx_ a b => Match a b [PosLen] where
@@ -66,7 +66,7 @@ instance Rx_ a b => Match a b [PosLen] where
 
      /Utf8/
 
-     "Text.Regex.Do.Pcre.MatchSame"     -}
+     "Text.Regex.Do.Pcre.MatchHint"     -}
 
 -- | match all
 instance Rx_ a b => Match a b [[PosLen]] where

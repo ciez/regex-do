@@ -1,5 +1,15 @@
 {- | this module uses
     <https://cdepillabout.github.io/haskell-type-families-presentation/#/ TypeFamilies>
+
+    this module is similar to "Text.Regex.Do.Pcre.Match". The differences are:
+
+    "Text.Regex.Do.Pcre.Match" is more flexible:
+        accepts 'Pattern' 'Regex',
+        accepts 'Pattern' and 'Body' of different types
+
+    "Text.Regex.Do.Pcre.Match" needs to infer result type
+
+    in this module the result type is determined by the hint
     -}
 
 {-# LANGUAGE TypeFamilies #-}
@@ -18,6 +28,10 @@ import Data.ByteString
 
     handy when working with 'OverloadedStrings', in other cases when compiler needs a hint
 
+    >>> Test ("в"::ByteString) =~ "тихо в лесу"
+
+    True
+
     >>> Once ("^all"::String) =~ "all the time"
 
     \["all"\]
@@ -31,9 +45,9 @@ class (Hint hint, M.Match a a (F hint a)) =>
     match::hint (Pattern a) -> Body a -> F hint a
     match h0 = M.match $ unhint h0
 
-    (=~)::hint a  -- ^ pattern
+    (=~)::hint a  -- ^ hint & pattern
             -> a          -- ^ body
-            -> F hint a        -- ^ \- in ('-~') is the minus sign
+            -> F hint a   -- ^ type defined by the instance, determined by the hint
     (=~) h0 = (M.=~) $ unhint h0
 
 

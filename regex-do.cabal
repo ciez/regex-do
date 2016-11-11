@@ -1,5 +1,5 @@
 name:                regex-do
-version:             2.2
+version:             2.3
 synopsis:            PCRE wrapper
 description:         format, search, replace (String | ByteString) with PCRE regex. Utf8-safe
 author:              Imants Cekusins
@@ -7,6 +7,7 @@ maintainer:          Imants Cekusins
 category:            Regex, Search, String
 license:             PublicDomain
 license-file:        PublicDomain
+extra-source-files:  changelog.md
 cabal-version:       >=1.10
 build-type:          Simple
 homepage:            https://github.com/ciez/regex-do
@@ -35,7 +36,6 @@ library
   other-modules:
           Text.Regex.Do.Pcre.Matchf
           Text.Regex.Do.Pcre.Result
-
   ghc-options:  -fwarn-unused-imports
     
   build-depends:  base <= 5.0,
@@ -83,6 +83,7 @@ test-suite spec
         TestRegex.TestReplace
         TestRegex.TestSplit
         TestRegex.TestTrim
+        TestRegex.TestReplaceOpen
 
   build-depends:  base <= 5.0,
                   hspec,

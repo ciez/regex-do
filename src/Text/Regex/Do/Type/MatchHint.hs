@@ -1,7 +1,6 @@
 module Text.Regex.Do.Type.MatchHint where
 
-
-newtype Test a = Test a
+newtype Test a = Test a     -- ^ test: does body match pattern?
 newtype Once a = Once a     -- ^ values
 newtype All a = All a       -- ^ values
 newtype PosLen' a = PosLen' a   -- ^ once
