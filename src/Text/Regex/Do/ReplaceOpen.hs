@@ -7,7 +7,7 @@
 
     "Data.Text" instance already works  -}
 
-module Text.Regex.Do.Pcre.ReplaceOpen
+module Text.Regex.Do.ReplaceOpen
     (ReplaceOpen(..),
     defaultReplacer,
     getGroup,
@@ -19,7 +19,7 @@ import Text.Regex.Base.RegexLike as R
 import Data.Array as A
 import Prelude as P
 import Text.Regex.Do.Type.Do
-import Text.Regex.Do.Pcre.Result as R
+import Text.Regex.Do.Result as R
 import Text.Regex.Do.Convert
 import Text.Regex.Do.Type.Extract
 
@@ -86,7 +86,6 @@ firstGroup (pl0:_) r1@(new0,a0) = acc $ replaceMatch pl0 (new0, acc1)
                     acc = a0,
                     pos_adj = 0
                     }
-
 
 
 --  dynamic

@@ -1,5 +1,5 @@
 name:                regex-do
-version:             2.4
+version:             2.5
 synopsis:            PCRE wrapper
 description:         format, search, replace (String | ByteString) with PCRE regex. Utf8-safe
 author:              Imants Cekusins
@@ -19,23 +19,28 @@ source-repository   head
 library
   exposed-modules:
           Text.Regex.Do.Trim
-          Text.Regex.Do.Pcre.Match
           Text.Regex.Do.Pcre.Option
-          Text.Regex.Do.Pcre.Replace
+          Text.Regex.Do.Pcre.Utf8.Replace
           Text.Regex.Do.Split
           Text.Regex.Do.Format
           Text.Regex.Do.Type.Do
           Text.Regex.Do.Type.Reexport
           Text.Regex.Do.Convert
           Text.Regex.Do.Pad
-          Text.Regex.Do.Pcre.MatchHint
-          Text.Regex.Do.Pcre.ReplaceOpen
+          Text.Regex.Do.Pcre.Ascii.MatchHint
+          Text.Regex.Do.ReplaceOpen
           Text.Regex.Do.Type.Extract
-          Text.Regex.Do.Type.Regex_
+          Text.Regex.Do.Type.Regex
           Text.Regex.Do.Type.MatchHint
-  other-modules:
+          Text.Regex.Do.Pcre.Ascii.Match
+          Text.Regex.Do.Pcre.Ascii.Replace
+          Text.Regex.Do.Pcre.Utf8.Match
+          Text.Regex.Do.Pcre.Utf8.MatchHint
           Text.Regex.Do.Pcre.Matchf
-          Text.Regex.Do.Pcre.Result
+
+  other-modules:
+          Text.Regex.Do.Result
+
   ghc-options:  -fwarn-unused-imports
     
   build-depends:  base <= 5.0,
@@ -58,6 +63,7 @@ library
                         ConstraintKinds
                         ScopedTypeVariables
                         DeriveFunctor
+                        TypeFamilies
                        
 
 test-suite spec
@@ -74,6 +80,7 @@ test-suite spec
                         ConstraintKinds
                         ScopedTypeVariables
                         DeriveFunctor
+                        TypeFamilies
 
 
   main-is: Main.hs
@@ -84,6 +91,7 @@ test-suite spec
         TestRegex.TestSplit
         TestRegex.TestTrim
         TestRegex.TestReplaceOpen
+        TestRegex.TestReplaceUtf
 
   build-depends:  base <= 5.0,
                   hspec,

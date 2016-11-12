@@ -1,3 +1,9 @@
+#####   2.5
+  *API changes*
+  split PCRE to Ascii and Utf8
+  remove \[Comp\] opt from replace signature   
+  tweak trim  
+
 #####   2.4
   refactor Replace: remove ReplaceCase. Use Once | All hints instead  
  

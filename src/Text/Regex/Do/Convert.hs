@@ -13,6 +13,9 @@ import Prelude as P
 toByteString::String -> ByteString
 toByteString = E.encodeUtf8 . T.pack
 
+toByteString'::String -> Utf8_ ByteString
+toByteString' = Utf8_ . toByteString
+
 -- | both Ascii and Utf8
 toString::ByteString -> String
 toString = T.unpack . E.decodeUtf8

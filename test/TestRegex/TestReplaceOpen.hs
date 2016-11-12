@@ -2,7 +2,7 @@
 module TestRegex.TestReplaceOpen where
 
 import Test.Hspec
-import Text.Regex.Do.Pcre.ReplaceOpen as O
+import Text.Regex.Do.ReplaceOpen as O
 import Text.Regex.Do.Type.Do
 import Data.Text
 import Text.Regex.Do.Convert()

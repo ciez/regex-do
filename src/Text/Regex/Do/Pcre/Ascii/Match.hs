@@ -1,14 +1,21 @@
--- | see "Text.Regex.Base.RegexLike" and "Text.Regex.Do.Pcre.MatchHint"
-module Text.Regex.Do.Pcre.Match
+{- | although sometimes funs in Ascii modules work with non-ascii text
+    (as some examples show),
+    for reliable results with Utf8 pattern or body,
+    use "Text.Regex.Do.Pcre.Utf8.Match"
+
+    see also "Text.Regex.Base.RegexLike" and "Text.Regex.Do.Pcre.Ascii.MatchHint" -}
+
+module Text.Regex.Do.Pcre.Ascii.Match
     (Match(..),
-    R.extract,   -- | 'extract' is reexport from "Text.Regex.Base.RegexLike"
-    makeRegexOpts) where
+    R.extract   -- | 'extract' is reexport from "Text.Regex.Base.RegexLike"
+    ) where
 
 import qualified Text.Regex.Base.RegexLike as R hiding (makeRegex)
 import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Pcre.Matchf as F
 import Text.Regex.PCRE.Wrap()
-import Text.Regex.Do.Type.Regex_
+import Text.Regex.Do.Type.Regex
+import Text.Regex.Do.Type.MatchHint
 
 
 {- | 'match' covers all result types
@@ -18,7 +25,7 @@ import Text.Regex.Do.Type.Regex_
     '=~' is borrowed from "Text.Regex.PCRE.Wrap",
     is a short version of 'match'
 
-    See also "Text.Regex.Do.Pcre.MatchHint"       -}
+    See also "Text.Regex.Do.Pcre.Ascii.MatchHint"       -}
 
 class Match a b out where
     match::Pattern a -> Body b -> out
@@ -30,43 +37,33 @@ class Match a b out where
 
 -- | match once
 instance Rx_ a b => Match a b [b] where
-    match = once
+    match p0 = once (makeRegex' p0)
 {- ^  >>> "^all" =~ "all the time"::[String]
 
-     \["all"\]
-
-     "Text.Regex.Do.Pcre.MatchHint"     -}
+     \["all"\]      -}
 instance Rx_ a b => Match a b Bool where
-    match p0 (Body b0) = R.matchTest (r_ p0) b0
+    match p0 (Body b0) = R.matchTest (makeRegex p0) b0
 {- ^ test
 
     >>> "в" =~ "тихо в лесу"::Bool
 
-    True
-
-    "Text.Regex.Do.Pcre.MatchHint"      -}
+    True    -}
 
 -- | match all
 instance Rx_ a b => Match a b [[b]] where
-    match = F.all
+    match p0 = F.all (makeRegex' p0)
 {- ^  >>> "well" =~ "all is well that ends well"::[[ByteString]]
 
-     \[["well"\],\["well"\]]
-
-     "Text.Regex.Do.Pcre.MatchHint"    -}
+     \[["well"\],\["well"\]]        -}
 
 -- | match once
 instance Rx_ a b => Match a b [PosLen] where
-    match p0 b0 = maybe [] id $ poslen_ p0 b0
-{- ^ >>> "и" =~ "бывает и хуже"::[PosLen]
+    match p0 b0 = maybe [] id $ poslen_ (Once $ makeRegex' p0) b0
+{- ^ >>> "à" =~ "tourner à gauche"::[PosLen]
 
-     \[(13,2)\]
-
-     /Utf8/
-
-     "Text.Regex.Do.Pcre.MatchHint"     -}
+     \[(8,2)\]      -}
 
 -- | match all
 instance Rx_ a b => Match a b [[PosLen]] where
-    match = poslen_
+    match p0 = poslen_ $ All $ makeRegex' p0
 

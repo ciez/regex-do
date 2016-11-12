@@ -36,19 +36,19 @@ main = hspec $ do
 
        describe "StringSearch.Search zerolength" $ do
           it "break" $ do
-            evaluate (errFn $ break Drop) `shouldThrow` anyException
+            evaluate (errFn1 $ break Drop) `shouldThrow` anyException
           it "break front" $ do
-            evaluate (errFn $ break Front) `shouldThrow` anyException
+            evaluate (errFn1 $ break Front) `shouldThrow` anyException
           it "break end" $ do
-            evaluate (errFn $ break End) `shouldThrow` anyException
+            evaluate (errFn1 $ break End) `shouldThrow` anyException
           it "replace" $ do
             evaluate (S.replace (Pattern B.empty) with body) `shouldThrow` anyException
           it "split" $ do
-            evaluate (errFn $ split Drop) `shouldThrow` anyException
+            evaluate (errFn2 $ split Drop) `shouldThrow` anyException
           it "split end" $ do
-            evaluate (errFn $ split End) `shouldThrow` anyException
+            evaluate (errFn2 $ split End) `shouldThrow` anyException
           it "split front" $ do
-            evaluate (errFn $ split Front) `shouldThrow` anyException
+            evaluate (errFn2 $ split Front) `shouldThrow` anyException
 
        describe "StringSearch.Search break delim not found" $ do
             it "delim not found" $ do
@@ -67,7 +67,8 @@ main = hspec $ do
                split_sp1 = split Drop pat_sp body_sp
                splitFront1 = split Front pat body
                splitEnd1 = split End pat body
-               errFn fn1 = fn1 (Pattern B.empty) body
+               errFn1 fn1 = fn1 (Pattern B.empty) body
+               errFn2 fn1 = fn1 (Pattern B.empty) body
                b = toByteString
                --   break delim not found
                pat_nf = Pattern ":"
