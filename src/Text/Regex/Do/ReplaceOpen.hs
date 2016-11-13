@@ -108,7 +108,10 @@ defaultReplacer idx0 tweak0 = GroupReplacer fn1
                                  where str2 = tweak0 str1
 
 
-{- | get group content safely
+{- | get group content safely:
+
+    * non-existing group idx will not error but return 'Nothing'
+    * adjust for previous replacements length
 
     see 'defaultReplacer' source for use example
     -}
@@ -121,9 +124,10 @@ getGroup acc0 ma0 idx0 = if idx0 >= P.length ma0 then Nothing     --  safety cat
           val1 = extract pl2 $ acc acc0
 
 
-{- | call from your custom 'GroupReplacer' passed to 'replaceGroup'
+{- | replace group match while adjusting for previous replacements length
 
-     see 'defaultReplacer' source for use example     -}
+    see 'defaultReplacer' source for use example     -}
+
 replaceMatch::Extract' a =>
         PosLen      -- ^ replaceable, unadjusted
         -> (a, ReplaceAcc a)  -- ^ (new val, acc passed to 'GroupReplacer')

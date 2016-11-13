@@ -11,7 +11,11 @@ import qualified Text.Regex.PCRE.ByteString as B
 
 -- | <http://www.pcre.org/pcre.txt pcre man pages>
 
-data Comp = Blank       -- ^ 'B.compBlank'
+data Comp = Blank       {- ^ 'B.compBlank'
+
+                            clears default options: extended,caseSensitive,multiline regex
+                        -}
+
             | Anchored  {- ^ 'B.compAnchored'
 
             the pattern is forced to be "anchored", that is, it
@@ -85,7 +89,9 @@ data Comp = Blank       -- ^ 'B.compBlank'
    deriving (Eq,Ord,Enum)
 
 
-data Exec = BlankE  -- ^ 'B.execBlank'
+data Exec = BlankE  {- ^ 'B.execBlank'
+
+                    clears default options: extended,caseSensitive,multiline regex      -}
             | NotEmpty  {- ^ 'B.execNotEmpty'
 
             An empty string is not considered to be a valid match if this option is

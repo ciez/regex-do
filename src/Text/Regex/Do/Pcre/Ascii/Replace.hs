@@ -17,7 +17,31 @@ import Text.Regex.Do.Type.Extract
 import Text.Regex.Do.Type.MatchHint
 import Text.Regex.Do.Pcre.Option as O
 
-{- | arg overloading    -}
+{- | 'All' | 'Once' needs to be specified once with either pat, repl or body
+
+    * pat: a: 'String' | 'ByteString' | 'Regex'
+
+        * a
+        * ('All' | 'Once' (a))
+        * ('All' | 'Once' ('Pattern' a))
+
+    * repl:  b: 'String' | 'ByteString'
+
+        * ('Replacement' b)
+        * ('GroupReplacer' b)
+        * ('All' | 'Once' ('Replacement' b))
+        * ('All' | 'Once' ('GroupReplacer' b))
+
+    * body: b: 'String' | 'ByteString'
+
+        * b
+        * 'Body' b
+        * ('All' | 'Once' (b))
+
+    * out:
+
+        * 'String' | 'ByteString'
+    -}
 class Replace pat repl body out where
     replace::pat -> repl -> body -> out
 

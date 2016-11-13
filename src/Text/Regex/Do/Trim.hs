@@ -3,6 +3,7 @@ module Text.Regex.Do.Trim where
 import Text.Regex.Do.Type.Do
 import Data.Char(isSpace)
 import qualified Data.ByteString as B
+import qualified Data.Text as T
 import Text.Regex.Do.Convert
 import Text.Regex.Do.Pcre.Ascii.Replace
 import Text.Regex.Do.Type.MatchHint
@@ -24,6 +25,11 @@ instance Trim B.ByteString where
                         in makeRegexOpt p1 [Blank] []
 
 
-instance  Trim String where
+instance Trim String where
     trim = f . f
        where f = reverse . dropWhile isSpace
+
+
+instance Trim T.Text where
+    trim = T.strip
+-- ^ see 'T.strip'

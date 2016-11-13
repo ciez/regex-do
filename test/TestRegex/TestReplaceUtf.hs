@@ -66,7 +66,7 @@ groupReplace2_::IO()
 groupReplace2_ =  hspec $ do
        describe "TestRegex.TestReplaceUtf" $ do
             it "боль" $ do
-               runFn1 `shouldBe` (toByteString "A - B : 5:0")
+               runFn1 `shouldBe` (toByteString "А - Я : 5:0")
             where runFn1 =
                      let rx1 = toByteString "(\\[[^\\]]+\\])"
                          body1 = toByteString "[какая боль, ][команды] : [счёт]"
@@ -76,7 +76,7 @@ groupReplace2_ =  hspec $ do
 replacer2_::GroupReplacer (ByteString)
 replacer2_ = defaultReplacer 1 tweak1
       where tweak1 s1
-                | s1 == toByteString "[команды]" = toByteString "A - B"
+                | s1 == toByteString "[команды]" = toByteString "А - Я"
                 | s1 == toByteString "[счёт]" = toByteString "5:0"
                 | s1 == toByteString "[какая боль, ]" = empty
                 | otherwise = traceShow s1 $ toByteString "?"

@@ -1,10 +1,10 @@
 module Text.Regex.Do.Type.MatchHint where
 
 newtype Test a = Test a     -- ^ test: does body match pattern?
-newtype Once a = Once a     -- ^ values
+newtype Once a = Once a     -- ^ match / replace once
         deriving (Functor)
 
-newtype All a = All a        -- ^ values
+newtype All a = All a        -- ^ match / replace all
         deriving (Functor)
 
 newtype PosLen' a = PosLen' a   -- ^ once

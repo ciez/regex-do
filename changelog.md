@@ -1,3 +1,10 @@
+#####   2.6.1
+  compatible with 2.6
+  
+  add Format instances: ByteString, Text   
+  add Trim instance: Text   
+    
+
 #####   2.6
   compatible with 2.5   
   

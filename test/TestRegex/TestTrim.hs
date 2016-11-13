@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 module TestRegex.TestTrim where
 
 import Test.Hspec

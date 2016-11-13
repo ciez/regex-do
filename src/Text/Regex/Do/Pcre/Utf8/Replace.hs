@@ -18,7 +18,12 @@ import Text.Regex.Do.Type.MatchHint
 import Text.Regex.Do.Convert
 import Data.ByteString
 
-{- | arg overloading    -}
+{- | see "Text.Regex.Do.Pcre.Ascii.Replace" for implemented types
+
+    in full typed instance every b is wrapped in 'Utf8_' newtype
+
+    'GroupReplacer' is implemented only for 'ByteString'    -}
+
 class Replace pat repl body out where
     replace::pat -> repl -> body -> out
 
@@ -63,7 +68,7 @@ instance (T.Regex b, Hint all,
     >>> replacer::GroupReplacer (ByteString)
     replacer = defaultReplacer 1 tweak1
           where tweak1 s1
-                    | s1 == toByteString "[команды]" = toByteString "A - B"
+                    | s1 == toByteString "[команды]" = toByteString "А - Я"
                     | s1 == toByteString "[счёт]" = toByteString "5:0"
                     | s1 == toByteString "[какая боль, ]" = empty
                     | otherwise = traceShow s1 $ toByteString "?"
@@ -72,7 +77,7 @@ instance (T.Regex b, Hint all,
             body1 = toByteString "[какая боль, ][команды] : [счёт]"
         in replace rx1 (All replacer) body1
 
-    "A - B : 5:0"       -}
+    "А - Я : 5:0"       -}
 
 instance (T.Regex b,
         Replace' Once Utf8_ b repl,

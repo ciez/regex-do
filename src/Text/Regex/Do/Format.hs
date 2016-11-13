@@ -1,63 +1,116 @@
 module Text.Regex.Do.Format
-    (Format(..)) where
+    (Format(..),
+    ReplaceOne(..),
+    Formatable) where
 
 import Prelude as P
 import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Split as S (replace)
 import Text.Regex.Do.Convert
+import Data.ByteString as B
+import Data.Text as T
 
 
-class Format a where
-   format::String -> a -> String
+type Formatable a = (Format a [a], Format a [(a,a)])
+
+{- | ==== implemented a:
+
+    * 'String'
+    * 'ByteString'
+    * 'Text'      -}
+
+class Format a arg where
+   format::a -> arg -> a
 
 
-instance Format [String] where
+instance ReplaceOne Int a =>
+    Format a [a] where
    format = foldr_idx foldFn_idx
--- ^
--- === index based
--- >>> format "на первое {0}, на второе {0}" ["перловка"]
---
--- "на первое перловка, на второе перловка"
---
--- >>> format "Polly {0} a {1}" ["got","cracker"]
---
--- "Polly got a cracker"
---
+{- ^ === index based
+     >>> format "на первое {0}, на второе {0}" ["перловка"]
 
-foldFn_idx::String -> (Int, String) -> String
-foldFn_idx v (i,body1) = replaceOne body1 (show i) v
+     "на первое перловка, на второе перловка"
+
+     >>> format "Polly {0} a {1}" ["got","cracker"]
+
+     "Polly got a cracker"
+-}
+
+foldFn_idx::ReplaceOne k v =>
+    v -> (k, v) -> v
+foldFn_idx v0 (i0, body1) = replaceOne body1 i0 v0
 
 
-instance Format [(String,String)] where
+
+instance ReplaceOne a a =>
+    Format a [(a, a)] where
    format = P.foldr foldFn_map
--- ^
--- === key based
--- key may be {any string}
---
--- >>> format "овчинка {a} не {b}" [("a","выделки"),("b","стоит")]
---
--- "овчинка выделки не стоит"
---
+{- ^=== key based
+     key may be {any a}
 
-foldFn_map:: (String, String) -> String -> String
-foldFn_map (k,v) body1 = replaceOne body1 k v
+     >>> format "овчинка {a} не {b}" [("a","выделки"),("b","стоит")]
 
-replaceOne::String -> String -> String -> String
-replaceOne body k v = toString bs1
-   where pat1 = Pattern $ toByteString $ "{" ++ k ++ "}"
-         repl1 = Replacement $ toByteString v
-         bs1 = S.replace pat1 repl1 $ Body $ toByteString body
+     "овчинка выделки не стоит"
+-}
+
+
+
+foldFn_map::ReplaceOne k v =>
+    (k, v) -> v -> v
+foldFn_map (k0, v0) body1 = replaceOne body1 k0 v0
 
 
 
 --  fold with index
 type CustomerFn a b = (a -> (Int,b) -> b)
 
-foldr_idx :: CustomerFn a b -> b -> [a] -> b
-foldr_idx fn init1 list = b1
-   where i0 = P.length list - 1
-         (-1,b1) = P.foldr (foldFn fn) (i0,init1) list
+foldr_idx::CustomerFn a b -> b -> [a] -> b
+foldr_idx fn0 init1 list0 = b1
+   where i0 = P.length list0 - 1
+         (-1,b1) = P.foldr (foldFn fn0) (i0,init1) list0
 
-foldFn :: CustomerFn a b -> a -> (Int,b) -> (Int,b)
-foldFn fn val t@(i,_)= (i-1,b1)
-   where b1 = fn val t
+
+foldFn::CustomerFn a b -> a -> (Int, b) -> (Int, b)
+foldFn fn0 val0 t0@(i0, _) = (i0 - 1, b1)
+   where b1 = fn0 val0 t0
+
+
+class ReplaceOne idx a where
+    replaceOne::a -> idx -> a -> a
+
+
+instance ReplaceOne Int String where
+    replaceOne body0 k0 v0 = toString bs1
+       where pat1 = Pattern $ toByteString $ "{" ++ (show k0) ++ "}"
+             repl1 = Replacement $ toByteString v0
+             bs1 = S.replace pat1 repl1 $ Body $ toByteString body0
+
+
+instance ReplaceOne String String where
+    replaceOne body0 k0 v0 = toString bs1
+       where pat1 = Pattern $ toByteString $ "{" ++ k0 ++ "}"
+             repl1 = Replacement $ toByteString v0
+             bs1 = S.replace pat1 repl1 $ Body $ toByteString body0
+
+
+instance ReplaceOne Int ByteString where
+    replaceOne body0 k0 v0 = S.replace pat1 repl1 $ Body body0
+       where pat1 = Pattern $ toByteString $ "{" ++ (show k0) ++ "}"
+             repl1 = Replacement v0
+
+
+instance ReplaceOne ByteString ByteString where
+    replaceOne body0 k0 v0 = S.replace pat1 repl1 $ Body body0
+       where pat1 = Pattern $ B.concat [toByteString "{", k0, toByteString "}"]
+             repl1 = Replacement v0
+
+
+
+instance ReplaceOne Int Text where
+    replaceOne body0 k0 v0 = T.replace pat1 v0 body0
+       where pat1 = T.pack $ "{" ++ (show k0) ++ "}"
+
+
+instance ReplaceOne Text Text where
+    replaceOne body0 k0 v0 = T.replace pat1 v0 body0
+       where pat1 = T.concat [T.pack "{", k0, T.pack "}"]

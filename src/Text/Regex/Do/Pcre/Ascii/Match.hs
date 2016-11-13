@@ -19,7 +19,11 @@ import Text.Regex.Do.Type.Regex
 import Text.Regex.Do.Type.MatchHint
 
 
-{- | 'match' covers all result types
+{- | * a:  'String', 'ByteString', 'Regex'
+    * b:  'String', 'ByteString'
+    * out: ['String'], [['String']], ['ByteString'], [['ByteString']], 'Bool', ['PosLen'], [['PosLen']]
+
+    'match' covers all result types
 
     compiler looks up the appropriate function depending on the result type
 
@@ -34,6 +38,7 @@ class Match a b out where
     match::Pattern a -> Body b -> out
 
 
+-- | synonym for 'match'. arg without newtypes
 (=~)::Match a b out =>
     a     -- ^ pattern
     -> b    -- ^ body
