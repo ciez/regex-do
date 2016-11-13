@@ -7,6 +7,7 @@
 
 module Text.Regex.Do.Pcre.Ascii.Match
     (Match(..),
+    (=~),
     R.extract   -- | 'extract' is reexport from "Text.Regex.Base.RegexLike"
     ) where
 
@@ -25,14 +26,19 @@ import Text.Regex.Do.Type.MatchHint
     '=~' is borrowed from "Text.Regex.PCRE.Wrap",
     is a short version of 'match'
 
+    precompiled Regex may be used as pattern too. see "Text.Regex.Do.Pcre.Utf8.Match"
+
     See also "Text.Regex.Do.Pcre.Ascii.MatchHint"       -}
 
 class Match a b out where
     match::Pattern a -> Body b -> out
-    (=~)::a     -- ^ pattern
-        -> b    -- ^ body
-        -> out
-    (=~) p0 b0 = match (Pattern p0) (Body b0)
+
+
+(=~)::Match a b out =>
+    a     -- ^ pattern
+    -> b    -- ^ body
+    -> out
+(=~) p0 b0 = match (Pattern p0) (Body b0)
 
 
 -- | match once

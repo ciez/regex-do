@@ -1,10 +1,9 @@
-{- | === Ascii vs Utf8 modules
-
-    for reliable results with Utf8 pattern or body,
+{- | for reliable results with Utf8 pattern or body,
     use "Text.Regex.Do.Pcre.Utf8.Replace"   -}
 
 module Text.Regex.Do.Pcre.Ascii.Replace
     (Replace(..),
+    Replace'(),
     Repl_)  where
 
 import Text.Regex.Base.RegexLike as R
@@ -18,10 +17,58 @@ import Text.Regex.Do.Type.Extract
 import Text.Regex.Do.Type.MatchHint
 import Text.Regex.Do.Pcre.Option as O
 
+{- | arg overloading    -}
+class Replace pat repl body out where
+    replace::pat -> repl -> body -> out
 
-class Replace all a repl b where
-    replace::(R_ b, Matchf all b) =>
-        all (Pattern a) -> repl b -> Body b -> b
+
+instance (T.Regex a, Hint all, Replace' all a repl b) =>
+    Replace (all (Pattern a)) (repl b) (Body b) b where
+    replace = replace'
+{- ^ full typed arg
+
+    >>> replace (Once (Pattern "^a\\s")) (Replacement "A") (Body "a bc")    -}
+
+
+instance (T.Regex a, Hint all, Replace' all a repl b, Functor all) =>
+    Replace (all a) (repl b) b b where
+    replace p0 r0 b0 = replace' (Pattern <$> p0) r0 $ Body b0
+{- ^ hint 'Pattern'
+
+    >>> replace (Once "^a\\s") (Replacement "A") "a bc"     -}
+
+
+instance (T.Regex a, Hint all, Replace' all a repl b) =>
+    Replace a (all(repl b)) b b where
+    replace p0 r0 b0 = replace' p1 (unhint r0) $ Body b0
+        where p1 = swap r0 $ Pattern p0
+{- ^ hint repl
+
+    >>> replace "^a\\s" (Once (Replacement "A")) "a bc"   -}
+
+
+instance (T.Regex a, Replace' Once a repl b) =>
+    Replace a (repl b) (Once b) b where
+    replace p0 r0 b0 = replace' p1 r0 $ Body $ unhint b0
+        where p1 = swap b0 $ Pattern p0
+{- ^ hint 'Body'
+
+    >>> replace "^a\\s" (Replacement "A") $ Once "a bc"   -}
+
+
+instance (T.Regex a, Replace' All a repl b) =>
+    Replace a (repl b) (All b) b where
+    replace p0 r0 b0 = replace' p1 r0 $ Body $ unhint b0
+        where p1 = swap b0 $ Pattern p0
+-- ^ hint 'Body'
+
+
+{- | internal class & instances
+
+    use 'replace' instead  -}
+class Replace' all a repl b where
+    replace'::all (Pattern a) -> repl b -> Body b -> b
+
 
 type Repl_ f rx r a = (T.Regex rx,
                         R.RegexLike R.Regex a,
@@ -35,8 +82,8 @@ replace_ fn0 p0 r0 b0 =
 
 
 
-instance Repl_ Maybe a repl b => Replace Once a repl b where
-    replace = replace_ marray_
+instance Repl_ Maybe a repl b => Replace' Once a repl b where
+    replace' = replace_ marray_
 
 {- ^ === static replace for simple (no group) needle
 
@@ -53,8 +100,8 @@ instance Repl_ Maybe a repl b => Replace Once a repl b where
      "a=[1 0 1] b=3 12"     -}
 
 
-instance Repl_ [] a repl b => Replace All a repl b where
-    replace = replace_ marray_
+instance Repl_ [] a repl b => Replace' All a repl b where
+    replace' = replace_ marray_
 
 
 {- ^ to tweak regex with 'O.Comp' or 'O.Exec', see "Text.Regex.Do.Type.Regex"

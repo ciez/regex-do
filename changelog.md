@@ -1,7 +1,15 @@
+#####   2.6
+  compatible with 2.5   
+  
+  overload replace (both Ascii & Utf8): add shorter arg versions  
+
 #####   2.5
   *API changes*
+
   split PCRE to Ascii and Utf8
+
   remove \[Comp\] opt from replace signature   
+
   tweak trim  
 
 #####   2.4

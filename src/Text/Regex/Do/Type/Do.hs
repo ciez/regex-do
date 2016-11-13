@@ -69,3 +69,7 @@ instance Enc enc => Enc' GroupReplacer enc where
         \ma1 acc1 -> val <$> (fn0 ma1 $ enc <$> acc1)
     enc' (GroupReplacer fn0) = GroupReplacer $
         \ma1 acc1 -> enc <$> (fn0 ma1 $ val <$> acc1)
+
+instance Enc enc => Enc' Replacement enc where
+    val' = (val <$>)
+    enc' = (enc <$>)

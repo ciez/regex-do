@@ -35,14 +35,18 @@ class Match enc a b out where
 (=~) p0 b0 = match (Pattern $ Utf8_ p0) (Body $ Utf8_ b0)
 
 
--- | match once
-instance Rx_ a b => Match Utf8_ a b [b] where
-    match p0 b0 = once (mr_ p0) $ val <$> b0
+{- | match once
 
-{- ^ >>> let rx1 = makeRegexOpt' (Pattern $ toByteString' "左") [] []      --  add options as needed
+    ==== precompiled regex as pattern
+
+ >>> let rx1 = makeRegexOpt' (Pattern $ toByteString' "左") [] []      --  add options as needed
          rx2 = Utf8_ <$> rx1
          m1 = U.match rx2 (Body $ toByteString' "100メートル左折後、左")::[ByteString]
       m1 `shouldBe` [toByteString "左"]        -}
+
+instance Rx_ a b => Match Utf8_ a b [b] where
+    match p0 b0 = once (mr_ p0) $ val <$> b0
+
 
 
 instance Rx_ a b => Match Utf8_ a b Bool where

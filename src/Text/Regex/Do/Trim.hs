@@ -17,11 +17,11 @@ class Trim a where
 
 
 instance Trim B.ByteString where
-    trim bs1 = replace (All rx2) repl1 $ Body bs1
+    trim bs1 = replace rx2 repl1 (All bs1)
        where repl1 = Replacement B.empty
              rx1 = "(^[\\s\\t]+)|([\\s\\t]+$)"
              rx2 = let p1 = Pattern $ toByteString rx1
-                        in makeRegexOpt' p1 [Blank] []
+                        in makeRegexOpt p1 [Blank] []
 
 
 instance  Trim String where

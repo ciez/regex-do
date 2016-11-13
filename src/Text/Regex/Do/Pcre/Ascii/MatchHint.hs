@@ -35,10 +35,11 @@ class (Hint hint, M.Match a a (F hint a)) =>
     match::hint (Pattern a) -> Body a -> F hint a
     match h0 = M.match $ unhint h0
 
-    (=~)::hint a  -- ^ hint & pattern
-            -> a          -- ^ body
-            -> F hint a   -- ^ type defined by the instance, determined by the hint
-    (=~) h0 = (M.=~) $ unhint h0
+(=~)::MatchHint hint a =>
+        hint a  -- ^ hint & pattern
+        -> a          -- ^ body
+        -> F hint a   -- ^ type defined by the instance, determined by the hint
+(=~) h0 = (M.=~) $ unhint h0
 
 
 instance MatchHint Test String where

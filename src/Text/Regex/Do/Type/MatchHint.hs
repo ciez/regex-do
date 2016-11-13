@@ -45,3 +45,7 @@ instance Applicative Once where
 instance Applicative All where
     pure p0 = All p0
     (<*>) (All f0) (All a0) = All $ f0 a0
+
+
+swap::Hint hint => hint a -> b -> hint b
+swap _ = hint

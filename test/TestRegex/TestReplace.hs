@@ -25,10 +25,10 @@ doc::IO()
 doc = hspec $ do
        describe "Pcre.Replace doc" $ do
           it "replaceGroup 1" $ do
-            replace (Once (Pattern "\\w=(\\d{1,3})")) replacer (Body "a=101 b=3 12")
+            replace (Once "\\w=(\\d{1,3})") replacer "a=101 b=3 12"
                 `shouldBe` "a=[сто один] b=3 12"
           it "replaceGroup 2" $ do
-            replace (All (Pattern "\\w=(\\d{1,3})")) replacer (Body "a=101 b=3 12")
+            replace (All "\\w=(\\d{1,3})") replacer "a=101 b=3 12"
                 `shouldBe` "a=[сто один] b=[three] 12"
           it "replace 3" $ do
             U.replace (Once (Pattern $ Utf8_ "менее")) (Replacement $ Utf8_ $ "более") (Body $ Utf8_ "менее менее")
@@ -37,7 +37,7 @@ doc = hspec $ do
             U.replace (All (Pattern $ Utf8_ "менее")) (Replacement $ Utf8_ $ "боле") (Body $ Utf8_ "менее менее")
                 `shouldBe` "боле боле"
           it "replace 5" $ do
-            replace (Once (Pattern "^a\\s")) (Replacement "A") (Body "a bc хол.гор.")
+            replace (Once "^a\\s") (Replacement "A") "a bc хол.гор."
                 `shouldBe` "Abc хол.гор."
 
 
