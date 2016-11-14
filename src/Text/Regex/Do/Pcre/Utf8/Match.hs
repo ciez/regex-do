@@ -24,20 +24,30 @@ import Text.Regex.Do.Convert
 import Data.ByteString
 
 
-{- | * enc: 'Utf8_'
-    * a:  'String', 'ByteString', 'Regex'
-    * b:  'String', 'ByteString'
-    * out: ['String'], [['String']], ['ByteString'], [['ByteString']], 'Bool', ['PosLen'], [['PosLen']]
-    -}
-class Match enc a b out where
-    match::Pattern (enc a) -> Body (enc b) -> out
-
 -- | synonym for 'match'. arg without newtypes
 (=~)::Match Utf8_ a b out =>
     a     -- ^ pattern
     -> b    -- ^ body
     -> out
 (=~) p0 b0 = match (Pattern $ Utf8_ p0) (Body $ Utf8_ b0)
+
+
+
+{- | * enc: 'Utf8_'
+    * a:  'String', 'ByteString', 'Regex'
+
+    to catch regex construction __errors__, precompile 'Regex' with 'makeRegexM' or 'makeRegexOptM'
+
+    * b:  'String', 'ByteString'
+    * out:
+
+        * ['String'], [['String']]
+        * ['ByteString'], [['ByteString']]
+        * 'Bool'
+        * ['PosLen'], [['PosLen']]      -}
+
+class Match enc a b out where
+    match::Pattern (enc a) -> Body (enc b) -> out
 
 
 {- | match once

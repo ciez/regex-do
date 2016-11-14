@@ -1,3 +1,17 @@
+{- | ==== placeholder syntax:
+
+       * index based
+
+            { Int }
+
+       * key based
+
+            { 'String' | 'ByteString' | 'Text' }
+
+    other placeholders may be implemented with
+
+    "Text.Regex.Do.Pcre.Ascii.Replace" or "Text.Regex.Do.Pcre.Utf8.Replace"       -}
+
 module Text.Regex.Do.Format
     (Format(..),
     ReplaceOne(..),
@@ -20,7 +34,9 @@ type Formatable a = (Format a [a], Format a [(a,a)])
     * 'Text'      -}
 
 class Format a arg where
-   format::a -> arg -> a
+   format::a    -- ^ text to format e.g. "today is {0}"
+        -> arg  -- ^ replacement: [a] or [(a,a)]
+        -> a    -- ^ formatted text
 
 
 instance ReplaceOne Int a =>

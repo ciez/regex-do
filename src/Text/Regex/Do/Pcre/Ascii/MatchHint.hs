@@ -3,14 +3,23 @@
 
     this module is similar to "Text.Regex.Do.Pcre.Ascii.Match". The differences are:
 
-    "Text.Regex.Do.Pcre.Ascii.Match" is more flexible:
+    * "Text.Regex.Do.Pcre.Ascii.Match" is more flexible:
+
         accepts 'Pattern' Regex,
+
         accepts 'Pattern' and 'Body' of different types
 
-    "Text.Regex.Do.Pcre.Ascii.Match" needs to infer result type
+    * "Text.Regex.Do.Pcre.Ascii.Match" needs to infer result type
 
-    in this module the result type is determined by the hint
-    -}
+    this module:
+
+    * 'Pattern' and 'Body' are of the same type
+
+    * 'Hint' and inferrable 'Pattern' or 'Body' type determine the instance
+
+        the result type is determined by the hint
+
+    * handy when working with 'OverloadedStrings', in other cases when compiler needs a hint  -}
 
 module Text.Regex.Do.Pcre.Ascii.MatchHint where
 
@@ -23,13 +32,7 @@ import Data.ByteString
 
 {- | * hint: 'Once', 'All', 'Test', 'PosLen'', 'PosLen_'
     * a: 'String', 'ByteString'
-
-    picks 'M.Match' instance where 'Pattern' and 'Body' are of the same type
-
-    'Hint' and inferrable 'Pattern' or 'Body' type determine the instance
-
-    handy when working with 'OverloadedStrings', in other cases when compiler needs a hint  -}
-
+-}
 
 
 class (Hint hint, M.Match a a (F hint a)) =>

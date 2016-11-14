@@ -1,5 +1,5 @@
 name:                regex-do
-version:             2.6.1
+version:             2.6.2
 synopsis:            PCRE wrapper
 description:         format, search, replace (String | ByteString) with PCRE regex. Utf8-safe
 author:              Imants Cekusins
@@ -40,7 +40,6 @@ library
 
   other-modules:
           Text.Regex.Do.Result
-
   ghc-options:  -fwarn-unused-imports
     
   build-depends:  base <= 5.0,
@@ -48,6 +47,7 @@ library
               regex-pcre,
               stringsearch,
               bytestring,
+              mtl,
               array,
               text
 
@@ -92,6 +92,7 @@ test-suite spec
         TestRegex.TestTrim
         TestRegex.TestReplaceOpen
         TestRegex.TestReplaceUtf
+        TestRegex.TestMakeRegexM
 
   build-depends:  base <= 5.0,
                   hspec,
@@ -99,6 +100,7 @@ test-suite spec
                   regex-base,
                   regex-pcre,
                   stringsearch,
+                  mtl,
                   bytestring,
                   array,
                   text,

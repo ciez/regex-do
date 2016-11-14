@@ -20,6 +20,8 @@ import Data.ByteString
 
 {- | see "Text.Regex.Do.Pcre.Ascii.Replace" for implemented types
 
+    to catch regex construction __errors__, precompile 'Regex' with 'makeRegexM' or 'makeRegexOptM'
+
     in full typed instance every b is wrapped in 'Utf8_' newtype
 
     'GroupReplacer' is implemented only for 'ByteString'    -}

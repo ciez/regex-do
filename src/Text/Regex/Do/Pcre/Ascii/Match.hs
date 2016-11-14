@@ -19,31 +19,37 @@ import Text.Regex.Do.Type.Regex
 import Text.Regex.Do.Type.MatchHint
 
 
-{- | * a:  'String', 'ByteString', 'Regex'
-    * b:  'String', 'ByteString'
-    * out: ['String'], [['String']], ['ByteString'], [['ByteString']], 'Bool', ['PosLen'], [['PosLen']]
+{- | short version of 'match': arg without newtypes
 
-    'match' covers all result types
-
-    compiler looks up the appropriate function depending on the result type
-
-    '=~' is borrowed from "Text.Regex.PCRE.Wrap",
-    is a short version of 'match'
-
-    precompiled Regex may be used as pattern too. see "Text.Regex.Do.Pcre.Utf8.Match"
-
-    See also "Text.Regex.Do.Pcre.Ascii.MatchHint"       -}
-
-class Match a b out where
-    match::Pattern a -> Body b -> out
-
-
--- | synonym for 'match'. arg without newtypes
+    is borrowed from "Text.Regex.PCRE.Wrap"    -}
 (=~)::Match a b out =>
     a     -- ^ pattern
     -> b    -- ^ body
     -> out
 (=~) p0 b0 = match (Pattern p0) (Body b0)
+
+
+
+{- | * a:  'String', 'ByteString', 'Regex'
+    * b:  'String', 'ByteString'
+    * out:
+
+        * ['String'], [['String']]
+        * ['ByteString'], [['ByteString']]
+        * 'Bool'
+        * ['PosLen'], [['PosLen']]
+
+
+    precompiled Regex may be used as pattern too. see "Text.Regex.Do.Pcre.Utf8.Match"
+
+    See also "Text.Regex.Do.Pcre.Ascii.MatchHint"
+
+    to catch regex construction __errors__, precompile 'Regex' with 'makeRegexM' or 'makeRegexOptM'     -}
+
+class Match a b out where
+    match::Pattern a -> Body b -> out
+
+
 
 
 -- | match once
@@ -56,16 +62,16 @@ instance Rx_ a b => Match a b Bool where
     match p0 (Body b0) = R.matchTest (makeRegex p0) b0
 {- ^ test
 
-    >>> "в" =~ "тихо в лесу"::Bool
+    >>> "chilly" =~ "it's chilly inside, chilly outside"::Bool
 
     True    -}
 
 -- | match all
 instance Rx_ a b => Match a b [[b]] where
     match p0 = F.all (makeRegex' p0)
-{- ^  >>> "well" =~ "all is well that ends well"::[[ByteString]]
+{- ^  >>> "chilly" =~ "it's chilly inside, chilly outside"::[[ByteString]]
 
-     \[["well"\],\["well"\]]        -}
+     \[["chilly"\],\["chilly"\]]        -}
 
 -- | match once
 instance Rx_ a b => Match a b [PosLen] where

@@ -1,3 +1,8 @@
+#####   2.6.2
+  compatible with 2.6.1
+  
+  add makeRegexM, makeRegexOptM, RegexResult to catch regex construction errors
+
 #####   2.6.1
   compatible with 2.6
   

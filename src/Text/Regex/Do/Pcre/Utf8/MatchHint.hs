@@ -15,12 +15,8 @@ import Data.ByteString
 {- | * hint: 'Once', 'All', 'Test', 'PosLen'', 'PosLen_'
     * a: 'String', 'ByteString'
     * enc: 'Utf8_'
+-}
 
-    picks 'M.Match' instance where 'Pattern' and 'Body' are of the same type
-
-    'Hint' and inferrable 'Pattern' or 'Body' type determine the instance
-
-    handy when working with 'OverloadedStrings', in other cases when compiler needs a hint  -}
 class (Hint hint, M.Match enc a a (F hint a)) =>
     MatchHint hint enc a where
     type F hint a

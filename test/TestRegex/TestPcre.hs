@@ -23,10 +23,11 @@ main = hspec $ describe " matchTest " $ do
      it " cd " $ S.match (PosLen' $ Pattern ("^cd"::String)) (Body "abcde") `shouldBe` []
      it " ab " $ S.match (Test $ Pattern ("^ab"::String)) (Body "abc") `shouldBe` True
      it "doc 1" $ Test ("в"::ByteString) S.=~ "тихо в лесу" `shouldBe` True
-     it "doc 1" $ Test (toByteString "в") Su.=~ toByteString "тихо в лесу" `shouldBe` True
+     it "doc 1.2" $ Test ("chilly"::ByteString) S.=~ "it's chilly inside, chilly outside" `shouldBe` True
+     it "doc 1.3" $ Test (toByteString "в") Su.=~ toByteString "тихо в лесу" `shouldBe` True
      it "doc 2" $ S.Once ("^all"::String) S.=~ "all the time" `shouldBe` ["all"]
      it "doc 3" $ S.Once ("^all"::ByteString) S.=~ "all the time" `shouldBe` ["all"]
-     it "doc 4" $ S.All ("well"::ByteString) S.=~ "all is well that ends well" `shouldBe` ([["well"],["well"]])
+     it "doc 4" $ S.All ("chilly"::ByteString) S.=~ "it's chilly inside, chilly outside" `shouldBe` ([["chilly"],["chilly"]])
      it "doc 5" $ PosLen' ("и"::String) S.=~ "бывает и хуже" `shouldBe` [(13,2)]
      it "doc 6" $ PosLen' ("à"::String) S.=~ "tourner à gauche" `shouldBe` [(8,2)]
      it "doc 7" $ do

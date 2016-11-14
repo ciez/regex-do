@@ -7,7 +7,7 @@ import qualified TestRegex.TestReplaceUtf as U
 import qualified TestRegex.TestReplaceOpen as O
 import qualified TestRegex.TestSplit as S
 import qualified TestRegex.TestTrim as T
-
+import qualified TestRegex.TestMakeRegexM as E
 
 main::IO()
 main = do
@@ -18,3 +18,4 @@ main = do
             O.main
             R.main
             U.main
+            E.main

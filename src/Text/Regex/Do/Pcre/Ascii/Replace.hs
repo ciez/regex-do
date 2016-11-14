@@ -25,6 +25,8 @@ import Text.Regex.Do.Pcre.Option as O
         * ('All' | 'Once' (a))
         * ('All' | 'Once' ('Pattern' a))
 
+    to catch regex construction __errors__, precompile 'Regex' with 'makeRegexM' or 'makeRegexOptM'
+
     * repl:  b: 'String' | 'ByteString'
 
         * ('Replacement' b)
