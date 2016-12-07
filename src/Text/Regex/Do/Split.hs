@@ -1,125 +1,111 @@
 {- | see "Data.ByteString.Search" package
 
+    break, split ops on 'ByteString'
+
     regex is treated as ordinary String
+    
+    break & split are now '/', '-/', '/-' 
+    
+    replace moved to "Text.Regex.Do.Replace.Fast"
     -}
 module Text.Regex.Do.Split
-    (break,
-    replace,
-    split,
-    KeepNeedle(..)) where
+    (Split(..),
+    SplitFront(..),
+    SplitEnd(..),
+    T,L
+    ) where
 
 import qualified Data.ByteString.Search as S
-import Text.Regex.Do.Type.Do hiding (replace)
 import Data.ByteString as B hiding (break, breakEnd, split)
-import qualified Data.ByteString.Lazy as L
-import Prelude hiding (break)
+import Prelude hiding (break,(/))
+import Text.Regex.Do.Match.Matchf
 
 
-data KeepNeedle = Drop  -- ^ needle between parts disappears
-        | Front -- ^ needle sticks to front of next part
-        | End   -- ^ needle sticks to end of previous part
+-- | Break result: tuple
+type T = (B.ByteString,B.ByteString)
 
-{- | >>> replace (Pattern "\n") (Replacement ",") (Body "a\nbc\nde")
-
-    "a,bc,de"       -}
-replace::Pattern ByteString -> Replacement ByteString -> Body ByteString -> ByteString
-replace (Pattern pat0)
-  (Replacement replacement)
-  (Body b0) = B.concat . L.toChunks $ l
-  where l = S.replace pat1 replacement b0
-        !pat1 = checkPattern pat0
+-- | Split result: list
+type L = [B.ByteString] 
 
 
 
--- ordinary:   a b
--- front:      a \nb
--- end:        a\n b
+{- | slices 'ByteString'. drops needle
+    
+    to avoid clash with 'Prelude':
+    
+    @import Prelude hiding((/))@       
 
-{- | >>> break Drop (Pattern "\n") (Body "a\nbc\nde")
-
-    ("a", "bc\\nde")
-
-
-    >>> break Front (Pattern "\n") (Body "a\nbc\nde")
-
-    ("a", "\\nbc\\nde")
-
-
-    >>> break End (Pattern "\n") (Body "a\nbc\nde")
-
-    ("a\\n", "bc\\nde")     -}
-
-break::KeepNeedle ->
-        Pattern ByteString -> Body ByteString ->
-            (ByteString, ByteString)
-break case0 = case case0 of
-                Drop -> break'
-                Front -> breakFront
-                End -> breakEnd
+    or qualify '/' with alias e.g. (assuming this module is imported with S alias):
+       
+    @S./@           
+    
+    body -> pattern -> result
+    -}
+class Split out where
+    (/)::ByteString -> ByteString -> out
 
 
-break'::Pattern ByteString -> Body ByteString -> (ByteString, ByteString)
-break' (Pattern pat0) (Body b0) =  (h1,t2)
-  where (h1,t1) = S.breakOn pat1 b0
-        len1 = B.length pat1
-        t2 = B.drop len1 t1
-        !pat1 = checkPattern pat0
+instance Split (ByteString,ByteString) where
+    (/) body0 pat0 =  (h1,t2)
+      where (h1,t1) = S.breakOn pat1 body0
+            len1 = B.length pat1
+            t2 = B.drop len1 t1
+            !pat1 = checkPattern pat0
+{- ^  >>> "a\nbc\nde" / "\n"
+
+        ("a", "bc\\nde")    -}
 
 
-breakFront::Pattern ByteString -> Body ByteString -> (ByteString, ByteString)
-breakFront (Pattern pat0)
-  (Body b0) = S.breakOn pat1 b0
-     where !pat1 = checkPattern pat0
+-- | keep needle \@ front
+class SplitFront out where
+    (-/)::ByteString        
+            -> ByteString   
+            -> out
 
 
-breakEnd::Pattern ByteString -> Body ByteString -> (ByteString, ByteString)
-breakEnd (Pattern pat0)
-  (Body b0) = S.breakAfter pat1 b0
-     where !pat1 = checkPattern pat0
+instance SplitFront (ByteString,ByteString) where
+    (-/) body0 pat0 = S.breakOn pat1 body0
+         where !pat1 = checkPattern pat0
+{- ^ >>> "a\nbc\nde" -/ "\n" 
+
+        ("a", "\\nbc\\nde")     -}
 
 
+-- | keep needle \@ end
+class SplitEnd out where
+    (/-)::ByteString       
+            -> ByteString   
+            -> out
 
 
-{- | >>> split Drop (Pattern " ") (Body "a bc de")
+instance SplitEnd (ByteString,ByteString) where
+    (/-) body0 pat0 = S.breakAfter pat1 body0
+         where !pat1 = checkPattern pat0
+{- ^ >>> "a\nbc\nde" /- "\n"  
 
-    \["a", "bc", "de"]
-
-    /space may be used/
-
-   >>> split Front (Pattern "\n") (Body "a\nbc\nde")
-
-    \["a", "\\nbc", "\\nde"]
+    ("a\\n", "bc\\nde")         -}
 
 
-    >>> split End (Pattern "\n") (Body "a\nbc\nde")
+instance Split [ByteString] where
+    (/) body0 pat0 = S.split pat1 body0
+         where !pat1 = checkPattern pat0
+{- ^ >>> "a bc de" / " "      -- space may be used
 
-   \["a\\n", "bc\\n", "de"]     -}
-
-split::KeepNeedle ->
-    Pattern ByteString -> Body ByteString ->
-        [ByteString]
-split case0 = case case0 of
-                Drop -> split'
-                Front -> splitFront
-                End -> splitEnd
+    \["a", "bc", "de"]      -}
 
 
-split'::Pattern ByteString -> Body ByteString -> [ByteString]
-split' (Pattern pat0)
-  (Body b0) = S.split pat1 b0
-     where !pat1 = checkPattern pat0
+instance SplitFront [ByteString] where
+    (-/) body0 pat0 = S.splitKeepFront pat1 body0
+         where !pat1 = checkPattern pat0
+{- ^ >>> "a\nbc\nde" -/ "\n"
 
-splitEnd::Pattern ByteString -> Body ByteString -> [ByteString]
-splitEnd (Pattern pat0)
-  (Body b0) = S.splitKeepEnd pat1 b0
-     where !pat1 = checkPattern pat0
-
-splitFront::Pattern ByteString -> Body ByteString -> [ByteString]
-splitFront (Pattern pat0)
-  (Body b0) = S.splitKeepFront pat1 b0
-     where !pat1 = checkPattern pat0
+    \["a", "\\nbc", "\\nde"]        -}
 
 
-checkPattern::ByteString -> ByteString
-checkPattern bs0 = if bs0 == B.empty then error "empty pattern"
-      else bs0
+instance SplitEnd [ByteString] where
+    (/-) body0 pat0 = S.splitKeepEnd pat1 body0
+         where !pat1 = checkPattern pat0
+{- ^ >>> "a\nbc\nde" /- "\n"
+
+    \["a\\n", "bc\\n", "de"]     -}
+

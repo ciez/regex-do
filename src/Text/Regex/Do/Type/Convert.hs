@@ -1,4 +1,4 @@
-module Text.Regex.Do.Convert where
+module Text.Regex.Do.Type.Convert where
 
 import qualified Data.Text.Encoding as E
 import qualified Data.Text as T
@@ -13,8 +13,6 @@ import Prelude as P
 toByteString::String -> ByteString
 toByteString = E.encodeUtf8 . T.pack
 
-toByteString'::String -> Utf8_ ByteString
-toByteString' = Utf8_ . toByteString
 
 -- | both Ascii and Utf8
 toString::ByteString -> String

@@ -1,12 +1,13 @@
 module TestRegex.TestFormat where
 
 import Test.Hspec
-import Text.Regex.Do.Format
+import Text.Regex.Do.Replace.Template
 import Text.Regex.Do.Pad
 import Data.String
-import Text.Regex.Do.Convert
+import Text.Regex.Do.Type.Convert
 import Data.ByteString
 import Data.Text as T
+import Prelude hiding ((<),(>))
 
 
 main::IO()
@@ -23,15 +24,17 @@ oneFormat::(Formatable a, IsString a, Eq a, Show a) =>
 oneFormat fn0 idx0 = hspec $ do
        describe "Habase.Bin.Format" $ do
           it "list arg 0,0 repl []" $
-            format (fn0 "на первое {0}, на второе {0}") (fn0 <$> []) `shouldBe` (fn0 "на первое {0}, на второе {0}")
+            (fn0 "на первое {0}, на второе {0}") < (fn0 <$> []) `shouldBe` (fn0 "на первое {0}, на второе {0}")
           it "list arg 0,0" $
-            format (fn0 "на первое {0}, на второе {0}") [fn0 "перловка"] `shouldBe` (fn0 "на первое перловка, на второе перловка")
+            (fn0 "на первое {0}, на второе {0}") < [fn0 "перловка"] `shouldBe` (fn0 "на первое перловка, на второе перловка")
+          it "list arg 0,0  >" $
+            [fn0 "перловка"] > (fn0 "на первое {0}, на второе {0}") `shouldBe` (fn0 "на первое перловка, на второе перловка")
           it "list arg 0,1" $ do
-            format (fn0 "Polly {0} a {1}") [fn0 "gets",fn0 "cracker"] `shouldBe` (fn0 "Polly gets a cracker")
-            format (fn0 "{10} {15} {21}") (idx0 <$> [0..22]) `shouldBe` (fn0 "10 15 21")
-            format (fn0 "{ten} {пятнадцать} {vingt}") [(fn0 "ten", fn0 "10"), (fn0 "пятнадцать", fn0 "15"), (fn0 "vingt", fn0 "20")] `shouldBe` (fn0 "10 15 20")
+            (fn0 "Polly {0} a {1}") < [fn0 "gets",fn0 "cracker"] `shouldBe` (fn0 "Polly gets a cracker")
+            (fn0 "{10} {15} {21}") < (idx0 <$> [0..22]) `shouldBe` (fn0 "10 15 21")
+            (fn0 "{ten} {пятнадцать} {vingt}") < [(fn0 "ten", fn0 "10"), (fn0 "пятнадцать", fn0 "15"), (fn0 "vingt", fn0 "20")] `shouldBe` (fn0 "10 15 20")
           it "map arg" $
-            format (fn0 "овчинка {a} не {b}") [(fn0 "a", fn0 "выделки"),(fn0 "b", fn0 "стоит")] `shouldBe` (fn0 "овчинка выделки не стоит")
+            (fn0 "овчинка {a} не {b}") < [(fn0 "a", fn0 "выделки"),(fn0 "b", fn0 "стоит")] `shouldBe` (fn0 "овчинка выделки не стоит")
 
           it "pad" $ pad '-' 5 "abc" `shouldBe` "--abc"
           it "pad'" $ pad' '-' 5 "abc" `shouldBe` "abc--"

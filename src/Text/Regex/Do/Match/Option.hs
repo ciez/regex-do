@@ -1,4 +1,4 @@
-module Text.Regex.Do.Pcre.Option (
+module Text.Regex.Do.Match.Option (
       Comp(..),
       Exec(..),
       comp,

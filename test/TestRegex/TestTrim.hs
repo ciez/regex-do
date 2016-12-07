@@ -4,7 +4,7 @@ import Test.Hspec
 import Debug.Trace
 import qualified Data.Text as T (strip, pack, unpack)
 import Text.Regex.Do.Trim
-import Text.Regex.Do.Convert
+import Text.Regex.Do.Type.Convert
 
 
 main::IO()

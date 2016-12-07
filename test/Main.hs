@@ -9,6 +9,7 @@ import qualified TestRegex.TestSplit as S
 import qualified TestRegex.TestTrim as T
 import qualified TestRegex.TestMakeRegexM as E
 
+
 main::IO()
 main = do
             F.main
@@ -16,6 +17,6 @@ main = do
             S.main
             T.main
             O.main
-            R.main
             U.main
+            R.main
             E.main

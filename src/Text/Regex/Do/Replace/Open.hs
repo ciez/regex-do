@@ -1,14 +1,34 @@
 {- | extensible and reusable replacement functions
 
-    Run replacement with your preferred content types e.g. "Data.Text",
-    from search results with non-PCRE regex or non-regex libs
+Run replacement with your preferred content types e.g. "Data.Text" (implemented),
 
-    open an issue or a PR on <https://github.com/ciez/regex-do git> to request a new 'Extract'' instance
+from search results with non-PCRE regex or non-regex libs
 
-    "Data.Text" instance already works  -}
+=== how to use:    
 
-module Text.Regex.Do.ReplaceOpen
-    (ReplaceOpen(..),
+value replacement:
+
+>>> replace (Just [(4,3)::PosLen]) "4567" ("abc 123 def"::Text)
+
+"abc 4567 def"
+
+
+'GroupReplacer' : replace with a function
+
+@
+replacer::GroupReplacer Text
+replacer = defaultReplacer 1 tweak1        --  1: group 1 match. 
+          where tweak1 str1 = case str1 of
+                                "123" -> "[1-2-3]"
+                                otherwise -> traceShow str1 "?"
+@
+
+>>> replace (Just ([(4,3)]::[PosLen])) replacer ("abc 123 def"::Text)
+
+    "abc [1-2-3] def"     -}    
+
+module Text.Regex.Do.Replace.Open
+    (Replace(..),
     defaultReplacer,
     getGroup,
     replaceMatch
@@ -19,63 +39,46 @@ import Text.Regex.Base.RegexLike as R
 import Data.Array as A
 import Prelude as P
 import Text.Regex.Do.Type.Do
-import Text.Regex.Do.Result as R
-import Text.Regex.Do.Convert
+import Text.Regex.Do.Match.Result as R
+import Text.Regex.Do.Type.Convert
 import Text.Regex.Do.Type.Extract
 
 
-{- | 'Replacement':
-
-    >>> replace (Just [(4,3)::PosLen]) (Replacement "4567") (Body "abc 123 def"::Body Text)
-
-    "abc 4567 def"
 
 
-    'GroupReplacer' :
-
-    >>> replacer::GroupReplacer Text
-        replacer = defaultReplacer 1 tweak1        --  1: first match in group
-              where tweak1 str1 = case str1 of
-                                    "123" -> "[1-2-3]"
-                                    otherwise -> traceShow str1 "?"
-
-    >>> replace (Just ([(4,3),(8,2)]::[PosLen])) replacer (Body "abc 123 def"::Body Text)
-
-        "abc [1-2-3] def"     -}
-
-class ReplaceOpen f r where
-   replace::(Extract' a, ToArray arr) =>
-        f arr -> r a -> Body a -> a
+class Replace f repl body where
+   replace::(Extract' body, ToArray arr) =>
+        f arr -> repl -> body -> body
 
 
-instance ReplaceOpen Maybe Replacement where
-   replace Nothing (Replacement repl0) (Body b0) = b0
-   replace (Just ma0) (Replacement repl0) (Body b0) = firstGroup lpl1 (repl0, b0)
+instance Replace Maybe b b where
+   replace Nothing repl0 body0 = body0
+   replace (Just ma0) repl0 body0 = firstGroup lpl1 (repl0, body0)
         where lpl1 = A.elems $ toArray ma0
 
 
-instance ReplaceOpen [] Replacement where
-   replace [] _ (Body b0) = b0
-   replace ma0 (Replacement repl0) (Body b0) =
+instance Replace [] b b where
+   replace [] _ body0 = body0
+   replace ma0 repl0 body0 =
       let lpl1 = R.poslen $ toArray <$> ma0::[[PosLen]]
           foldFn1 lpl1 acc1 = firstGroup lpl1 (repl0,acc1)
-      in P.foldr foldFn1 b0 lpl1
+      in P.foldr foldFn1 body0 lpl1
 
 
-instance ReplaceOpen Maybe GroupReplacer where
-   replace Nothing _ (Body b0) = b0
-   replace (Just ma0) (GroupReplacer repl0) (Body b0) =
+instance Replace Maybe (GroupReplacer b) b where
+   replace Nothing _ body0 = body0
+   replace (Just ma0) (GroupReplacer repl0) body0 =
             let a1 = ReplaceAcc {
-                                  acc = b0,
+                                  acc = body0,
                                   pos_adj = 0
                                 }
             in acc $ repl0 (toArray ma0) a1
 
 
-instance ReplaceOpen [] GroupReplacer where
-   replace [] _ (Body b0) = b0
-   replace ma0 (GroupReplacer repl0) (Body b0) =
-        let acc1 = ReplaceAcc { acc = b0, pos_adj = 0 }
+instance Replace [] (GroupReplacer b) b where
+   replace [] _ body0 = body0
+   replace ma0 (GroupReplacer repl0) body0 =
+        let acc1 = ReplaceAcc { acc = body0, pos_adj = 0 }
         in acc $ P.foldl (flip repl0) acc1 $ toArray <$> ma0
 
 
@@ -89,16 +92,16 @@ firstGroup (pl0:_) r1@(new0,a0) = acc $ replaceMatch pl0 (new0, acc1)
 
 
 --  dynamic
-{- | Replaces specified (by idx) group match with tweaked value.
+{- | Replaces specified (by idx) group match with value provided by (a -> a) fn.
     Works for one common simple use case
 
-    'GroupReplacer' can be used with complicated regex
+    'GroupReplacer' can also be used with multi-group regex
 
     another custom dynamic replacer could e.g.
     inspect all group matches before looking up a replacement.     -}
 defaultReplacer::Extract' a =>
-        Int         -- ^ group idx
-        -> (a -> a) -- ^ (group match -> replacement) tweak
+        Int         -- ^ group idx. 1-based
+        -> (a -> a) -- ^ (group match -> replacement) lookup
             -> GroupReplacer a
 defaultReplacer idx0 tweak0 = GroupReplacer fn1
     where fn1 (ma0::MatchArray) acc0 = maybe acc0 fn1 mval1
@@ -117,7 +120,7 @@ defaultReplacer idx0 tweak0 = GroupReplacer fn1
     -}
 getGroup::R.Extract a =>
     ReplaceAcc a -> MatchArray -> Int -> Maybe a
-getGroup acc0 ma0 idx0 = if idx0 >= P.length ma0 then Nothing     --  safety catch
+getGroup acc0 ma0 idx0 = if idx0 < 1 || idx0 > P.length ma0 then Nothing     --  safety catch
     else Just val1
     where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
           pl2 = adjustPoslen pl1 acc0

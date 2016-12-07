@@ -1,10 +1,10 @@
 module Text.Regex.Do.Type.MatchHint where
 
 newtype Test a = Test a     -- ^ test: does body match pattern?
-newtype Once a = Once a     -- ^ match / replace once
+newtype Once a = Once a     -- ^ replace once
         deriving (Functor)
 
-newtype All a = All a        -- ^ match / replace all
+newtype All a = All a        -- ^ replace all
         deriving (Functor)
 
 newtype PosLen' a = PosLen' a   -- ^ once
@@ -45,7 +45,3 @@ instance Applicative Once where
 instance Applicative All where
     pure p0 = All p0
     (<*>) (All f0) (All a0) = All $ f0 a0
-
-
-swap::Hint hint => hint a -> b -> hint b
-swap _ = hint

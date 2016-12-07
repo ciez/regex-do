@@ -4,19 +4,19 @@ Convenience functions to format, search, replace (String | ByteString) with PCRE
 
 example functions:
 ```
-format "Polly {0} a {1}" ["got","cracker"]
+"Polly {0} a {1}" < ["got","cracker"]
 "Polly got a cracker"
 
-format "овчинка {a} не {b}" [("a","выделки"),("b","стоит")]
+"овчинка {a} не {b}" < [("a","выделки"),("b","стоит")]
 "овчинка выделки не стоит"
 
 
-replace [Once,Utf8] (Pattern "менее", Replacement  "более") (Body "менее менее")
+replace (Once "менее") "более" "менее менее"
 "более менее"
 
 use replaceGroup for dynamic replace with groups in the needle
 
-split (Pattern "\n") (Body "a\nbc\nde")
+"\n" / "a\nbc\nde"
 ["a", "bc", "de"]
 
 

@@ -1,3 +1,16 @@
+#####   3.0
+  *API overhaul*
+
+  minimize use of newtypes
+
+  regex-constructing functions catch error, return Either String a
+
+  Format is now Replace.Template
+
+  fix bug in ReplaceOpen.getGroup    
+
+  hide Matchf
+
 #####   2.6.2
   compatible with 2.6.1
   

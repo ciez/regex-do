@@ -1,75 +1,74 @@
 module TestRegex.TestSplit where
 
-import Prelude hiding(break)
+import Prelude hiding((/))
 import Test.Hspec
 import Control.Exception (evaluate)
-import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Split as S
+import Text.Regex.Do.Replace.Fast as S
 import qualified Data.ByteString as B
-import Text.Regex.Do.Convert
+import Text.Regex.Do.Type.Convert
+
 
 
 main::IO()
 main = hspec $ do
        describe "Habase.Regex.StringSearch.Search" $ do
           it "break :" $ do
-            break Drop (Pattern ":") (Body "0123:oid:90") `shouldBe` ("0123", "oid:90")
+            "0123:oid:90"  S./ ":"  `shouldBe` (("0123", "oid:90")::S.T)
           it "break" $ do
-            break Drop (Pattern "\n") (Body "a\nbc\nde") `shouldBe` ("a", "bc\nde")
+            "a\nbc\nde" / "\n" `shouldBe` (("a", "bc\nde")::S.T)
           it "break front" $ do
-            break Front (Pattern "\n") (Body "a\nbc\nde") `shouldBe` ("a", "\nbc\nde")
+            "a\nbc\nde" -/ "\n" `shouldBe` (("a", "\nbc\nde")::S.T)
           it "break end" $ do
-            break End (Pattern "\n") (Body "a\nbc\nde") `shouldBe` ("a\n", "bc\nde")
+            "a\nbc\nde" /- "\n"  `shouldBe` (("a\n", "bc\nde")::S.T)
           it "replace" $ do
-            S.replace (Pattern "\n") (Replacement ",") (Body "a\nbc\nde") `shouldBe` "a,bc,de"
+            S.replace "\n" "," "a\nbc\nde" `shouldBe` "a,bc,de"
           it "split" $ do
-            split Drop (Pattern "\n") (Body "a\nbc\nde") `shouldBe` ["a", "bc", "de"]
+            "a\nbc\nde" / "\n" `shouldBe` (["a", "bc", "de"]::S.L)
           it "split_sp" $ do
-            split Drop (Pattern " ") (Body "a bc de") `shouldBe` ["a", "bc", "de"]
+            "a bc de" / " " `shouldBe` (["a", "bc", "de"]::S.L)
           it "split end" $ do
-            split End (Pattern "\n") (Body "a\nbc\nde") `shouldBe` ["a\n", "bc\n", "de"]
+            "a\nbc\nde" /- "\n"  `shouldBe` (["a\n", "bc\n", "de"]::S.L)
           it "split front" $ do
-            split Front (Pattern "\n") (Body "a\nbc\nde") `shouldBe` ["a", "\nbc", "\nde"]
+            "a\nbc\nde" -/ "\n"  `shouldBe` (["a", "\nbc", "\nde"]::S.L)
           it "split regex" $ do
-            split Drop (Pattern "\\s") (Body "abc de fghi ") `shouldBe` ["abc de fghi "]
+            "abc de fghi " / "\\s"  `shouldBe` (["abc de fghi "]::S.L)
 
 
        describe "StringSearch.Search zerolength" $ do
           it "break" $ do
-            evaluate (errFn1 $ break Drop) `shouldThrow` anyException
+            evaluate (body / z1::S.T) `shouldThrow` anyException
           it "break front" $ do
-            evaluate (errFn1 $ break Front) `shouldThrow` anyException
+            evaluate (body -/ z1::S.T) `shouldThrow` anyException
           it "break end" $ do
-            evaluate (errFn1 $ break End) `shouldThrow` anyException
+            evaluate (body /- z1::S.T) `shouldThrow` anyException
           it "replace" $ do
-            evaluate (S.replace (Pattern B.empty) with body) `shouldThrow` anyException
+            evaluate (S.replace B.empty with body) `shouldThrow` anyException
           it "split" $ do
-            evaluate (errFn2 $ split Drop) `shouldThrow` anyException
+            evaluate (body / z1::S.T) `shouldThrow` anyException
           it "split end" $ do
-            evaluate (errFn2 $ split End) `shouldThrow` anyException
+            evaluate (body -/ z1::S.T) `shouldThrow` anyException
           it "split front" $ do
-            evaluate (errFn2 $ split Front) `shouldThrow` anyException
+            evaluate (body -/ z1::S.T) `shouldThrow` anyException
 
        describe "StringSearch.Search break delim not found" $ do
             it "delim not found" $ do
                 break_nf `shouldBe` ( b "a\nbc\nde", B.empty)
 
-       where   pat = Pattern "\n"
-               pat_sp = Pattern " "
-               body = Body "a\nbc\nde"
-               body_sp = Body "a bc de"
-               with = Replacement ","
-               break1 = break Drop pat body
-               breakFront1 = break Front pat body
-               breakEnd1 = break End pat body
-               replace1 = S.replace pat with body
-               split1 = split Drop pat body
-               split_sp1 = split Drop pat_sp body_sp
-               splitFront1 = split Front pat body
-               splitEnd1 = split End pat body
-               errFn1 fn1 = fn1 (Pattern B.empty) body
-               errFn2 fn1 = fn1 (Pattern B.empty) body
+       where   pat = "\n"
+               pat_sp = " "
+               body = "a\nbc\nde"
+               body_sp = "a bc de"
+               with = ","
+               break1 = body / pat::S.T 
+               breakFront1 = body -/ pat::S.T
+               breakEnd1 = body /- pat::S.T
+               replace1 = S.replace pat with $ body
+               split1 = body / pat::S.L 
+               split_sp1 = body_sp / pat_sp::S.L 
+               splitFront1 = body -/ pat::S.L  
+               splitEnd1 = body /- pat::S.L  
+               z1 = B.empty
                b = toByteString
                --   break delim not found
-               pat_nf = Pattern ":"
-               break_nf = break Drop pat_nf body
+               break_nf = body / ":"  

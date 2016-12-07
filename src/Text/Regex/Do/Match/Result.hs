@@ -1,4 +1,4 @@
-module Text.Regex.Do.Result where
+module Text.Regex.Do.Match.Result where
 
 import qualified Data.Array as A(elems)
 import Text.Regex.Base.RegexLike as R
