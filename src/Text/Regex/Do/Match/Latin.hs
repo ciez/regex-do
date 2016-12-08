@@ -1,7 +1,7 @@
 {- | although sometimes funs in Ascii modules work with non-ascii text
     (as some examples show),
     for reliable results with Utf8 pattern or body,
-    use "Text.Regex.Do.Pcre.Match.Utf8"
+    use "Text.Regex.Do.Match.Utf8"
 
     see also "Text.Regex.Base.RegexLike" -}
 
@@ -42,7 +42,7 @@ import Data.Tagged
         * ['PosLen']
 
 
-    precompiled Regex may be used as pattern too. see "Text.Regex.Do.Pcre.Match.Utf8"  -}
+    precompiled Regex may be used as pattern too. see "Text.Regex.Do.Match.Utf8"  -}
 class MatchOnce pattern body out where
     (~?)::pattern -> body -> out
 

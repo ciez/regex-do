@@ -1,4 +1,4 @@
-{- | see also "Text.Regex.Do.Pcre.Replace.Latin"
+{- | see also "Text.Regex.Do.Replace.Latin"
 
     __'toByteString'__ converts String to 'ByteString'     -}
 
@@ -19,7 +19,7 @@ import Text.Regex.Base.RegexLike as R
 import Text.Regex.Do.Match.Option
 
 
-{- | see "Text.Regex.Do.Pcre.Replace.Latin" for implemented types
+{- | see "Text.Regex.Do.Replace.Latin" for implemented types
 
     'GroupReplacer' is implemented only for 'ByteString'    -}
 

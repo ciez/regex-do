@@ -16,7 +16,7 @@
 
     other placeholders may be implemented with
 
-    "Text.Regex.Do.Pcre.Ascii.Replace" or "Text.Regex.Do.Pcre.Utf8.Replace"       
+    "Text.Regex.Do.Replace.Latin" or "Text.Regex.Do.Replace.Utf8"       
     
     to avoid clash with 'Prelude':
     
@@ -60,13 +60,17 @@ instance ReplaceOne Int a =>
     Template a [a] where
    (<) t0 a0 = foldr_idx foldFn_idx t0 a0
 {- ^ === index based
-     >>> ["перловка"] > "на первое {0}, на второе {0}" 
+    >>> ["цветы", "мороженное"] > "даме {0}, детям {1}" 
+    
+    "даме цветы, детям мороженное"
 
+     >>> "Polly {0} a {1}" < ["wants","cracker"]
+
+     "Polly wants a cracker"
+     
+     >>> ["перловка"] > "на первое {0}, на второе {0}"
+    
      "на первое перловка, на второе перловка"
-
-     >>> "Polly {0} a {1}" < ["got","cracker"]
-
-     "Polly got a cracker"
 -}
 
 foldFn_idx::ReplaceOne k v =>

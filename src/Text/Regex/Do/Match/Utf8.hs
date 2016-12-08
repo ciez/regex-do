@@ -1,6 +1,6 @@
 {- | see "Text.Regex.Base.RegexLike" 
 
-    see "Text.Regex.Do.Pcre.Match.Latin" for API changes
+    see "Text.Regex.Do.Match.Latin" for API changes
 
     __'toByteString'__ converts String to utf8 'ByteString'     -}
 module Text.Regex.Do.Match.Utf8
@@ -55,8 +55,8 @@ class MatchAll pattern body out where
 ==== precompiled regex as pattern
 
 @    
-let rx1 = makeRegexOpt (toByteString "左") [Utf8] []      --  add options as needed
-    m1 = rx1 -? (toByteString "100メートル左折後、左")::[ByteString]
+let Right rx1 = makeRegexOpt (toByteString "左") [Utf8] []      --  add options as needed
+    m1 = rx1 ~? (toByteString "100メートル左折後、左")::[ByteString]
 m1 `shouldBe` [toByteString "左"]       
 @ -}
 

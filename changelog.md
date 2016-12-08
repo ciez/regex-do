@@ -1,3 +1,6 @@
+#####   3.0.1
+  fix changelog   
+
 #####   3.0
   *API overhaul*
 

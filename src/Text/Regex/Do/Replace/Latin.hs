@@ -1,5 +1,5 @@
 {- | for reliable results with Utf8 pattern or body,
-    use "Text.Regex.Do.Pcre.Replace.Utf8"   -}
+    use "Text.Regex.Do.Replace.Utf8"   -}
 
 module Text.Regex.Do.Replace.Latin
     (Replace(..))  where
