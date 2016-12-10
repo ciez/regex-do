@@ -3,7 +3,7 @@ module Text.Regex.Do.Type.Convert where
 import qualified Data.Text.Encoding as E
 import qualified Data.Text as T
 import Data.ByteString as B
-import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Do_
 import Text.Regex.Base.RegexLike as R
 import Data.Array as A
 import Prelude as P

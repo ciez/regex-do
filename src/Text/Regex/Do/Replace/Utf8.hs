@@ -10,7 +10,6 @@ import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Match.Matchf
 import qualified Text.Regex.Do.Replace.Open as O
 import Text.Regex.Do.Match.Regex as T
-import Text.Regex.Do.Type.MatchHint
 import Text.Regex.Do.Type.Convert
 import Data.ByteString
 import Text.Regex.Do.Type.Extract

@@ -60,9 +60,9 @@ instance ReplaceOne Int a =>
     Template a [a] where
    (<) t0 a0 = foldr_idx foldFn_idx t0 a0
 {- ^ === index based
-    >>> ["цветы", "мороженное"] > "даме {0}, детям {1}" 
+    >>> ["цветы", "мороженое"] > "даме {0}, детям {1}" 
     
-    "даме цветы, детям мороженное"
+    "даме цветы, детям мороженое"
 
      >>> "Polly {0} a {1}" < ["wants","cracker"]
 

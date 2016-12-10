@@ -1,7 +1,7 @@
 module TestRegex.TestPcre where
 
 import Test.Hspec
-import Text.Regex.Do.Type.Do as M
+import Text.Regex.Do.Type.Do_ as M
 import Text.Regex.Do.Match.Latin as M
 import Text.Regex.Do.Match.Utf8 as U
 import Text.Regex.Do.Type.Convert

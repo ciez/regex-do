@@ -1,3 +1,10 @@
+#####   3.1
+  tidy up types: 
+    
+  reexport Regex and other types in Text.Regex.Do.Type.Do
+
+  merge Hint and other types to Text.Regex.Do.Type.Do
+
 #####   3.0.1
   fix changelog   
 

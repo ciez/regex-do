@@ -2,7 +2,7 @@
 module TestRegex.TestReplace where
 
 import Test.Hspec
-import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Do_
 
 import Text.Regex.Do.Replace.Latin as R
 import qualified Text.Regex.Do.Replace.Utf8 as U

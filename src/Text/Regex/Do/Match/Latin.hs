@@ -11,14 +11,13 @@ module Text.Regex.Do.Match.Latin
     R.extract   -- | 'extract' is reexport from "Text.Regex.Base.RegexLike"
     ) where
 
+import Data.Tagged
 import qualified Text.Regex.Base.RegexLike as R hiding (makeRegex)
 import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Match.Matchf as F
-import Text.Regex.PCRE.Wrap()
-import Text.Regex.Do.Type.MatchHint
 import Text.Regex.Do.Match.Regex as R
 import Text.Regex.Do.Type.Reexport as Re
-import Data.Tagged
+import Text.Regex.Do.Type.Internal
 
 
 {- | === API changes: 

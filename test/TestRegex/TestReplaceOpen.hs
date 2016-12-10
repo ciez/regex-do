@@ -3,7 +3,7 @@ module TestRegex.TestReplaceOpen where
 
 import Test.Hspec
 import Text.Regex.Do.Replace.Open as O
-import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Do_
 import Data.Text
 import Text.Regex.Do.Type.Convert()
 import Debug.Trace

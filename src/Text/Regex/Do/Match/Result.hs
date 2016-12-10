@@ -3,6 +3,8 @@ module Text.Regex.Do.Match.Result where
 import qualified Data.Array as A(elems)
 import Text.Regex.Base.RegexLike as R
 import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Internal
+
 
 -- | match offset, length
 poslen::Functor f =>

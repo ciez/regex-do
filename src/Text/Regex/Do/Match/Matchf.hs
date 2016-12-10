@@ -1,13 +1,14 @@
--- | __internal__ module, exposed only to show the instances
+-- __internal__ module
 module Text.Regex.Do.Match.Matchf where
 
-import Text.Regex.Do.Type.Do
+import Data.Tagged
+import Data.ByteString as B
+import Text.Regex.Do.Type.Do_
 import Text.Regex.Do.Type.Reexport as R
 import Text.Regex.Do.Match.Result as R
 import Text.Regex.Base.RegexLike as R
 import Text.Regex.Do.Type.MatchHint
-import Data.Tagged
-import Data.ByteString as B 
+import Text.Regex.Do.Type.Internal
 
 
 type R_ b = R.RegexLike R.Regex b

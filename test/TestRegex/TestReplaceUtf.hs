@@ -2,7 +2,7 @@
 module TestRegex.TestReplaceUtf where
 
 import Test.Hspec
-import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Do_
 import Data.ByteString
 import Text.Regex.Do.Type.Convert
 import Text.Regex.Do.Replace.Utf8 as U

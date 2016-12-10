@@ -5,7 +5,7 @@ module Text.Regex.Do.Match.Regex
 import qualified Text.Regex.Base.RegexLike as R
 import qualified Text.Regex.Do.Type.Reexport as R
 import Data.ByteString
-import Text.Regex.Do.Type.Do
+import Text.Regex.Do.Type.Do hiding (Regex)
 import Text.Regex.Do.Match.Option
 import Data.List as L
 

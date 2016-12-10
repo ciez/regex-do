@@ -1,9 +1,9 @@
 -- | reexport common types from "Text.Regex.PCRE"
 module Text.Regex.Do.Type.Reexport (
-    W.Regex(..),
-    R.MatchArray(..),
-    W.CompOption(..),
-    W.ExecOption()
+    W.Regex(..) -- | "Text.Regex.PCRE.Wrap" 
+    ,R.MatchArray(..) -- | "Text.Regex.Base.RegexLike" 
+    ,W.CompOption(..) -- | "Text.Regex.PCRE.Wrap"
+    ,W.ExecOption()   -- | "Text.Regex.PCRE.Wrap"
     )   where
 
 import Text.Regex.PCRE.ByteString as B (Regex)

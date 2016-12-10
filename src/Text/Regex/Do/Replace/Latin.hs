@@ -12,7 +12,6 @@ import Text.Regex.Do.Match.Matchf
 import qualified Text.Regex.Do.Replace.Open as O
 import Text.Regex.Do.Match.Regex as T
 import Text.Regex.Do.Type.Extract
-import Text.Regex.Do.Type.MatchHint
 
 
 {- | hint: 'All' | 'Once'

@@ -30,7 +30,7 @@ oneFormat fn0 idx0 = hspec $ do
           it "list arg 0,0  >" $
             [fn0 "перловка"] > (fn0 "на первое {0}, на второе {0}") `shouldBe` (fn0 "на первое перловка, на второе перловка")
           it "list arg 0,0  > 2" $
-            [fn0 "цветы", fn0 "мороженное"] > (fn0 "даме {0}, детям {1}") `shouldBe` (fn0 "даме цветы, детям мороженное")
+            [fn0 "цветы", fn0 "мороженое"] > (fn0 "даме {0}, детям {1}") `shouldBe` (fn0 "даме цветы, детям мороженое")
           it "list arg 0,1" $ do
             (fn0 "Polly {0} a {1}") < [fn0 "gets",fn0 "cracker"] `shouldBe` (fn0 "Polly gets a cracker")
             (fn0 "{10} {15} {21}") < (idx0 <$> [0..22]) `shouldBe` (fn0 "10 15 21")

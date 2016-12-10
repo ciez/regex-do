@@ -10,16 +10,16 @@ module Text.Regex.Do.Match.Utf8
     ) where
 
 import Data.Tagged
+import Data.ByteString
 import qualified Text.Regex.Base.RegexLike as R hiding (makeRegex)
 import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Match.Matchf as F
 import Text.Regex.PCRE.Wrap()
 import Text.Regex.Do.Match.Regex as T
-import Text.Regex.Do.Type.MatchHint
 import Text.Regex.Do.Match.Option
 import Text.Regex.Do.Type.Reexport as Re
-import Data.ByteString
 import Text.Regex.Do.Type.Convert
+import Text.Regex.Do.Type.Internal
 
 
 {- | * pattern:  'String', 'ByteString', 'Regex'      compile 'Re.Regex' with 'Utf8' opt
