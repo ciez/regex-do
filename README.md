@@ -14,7 +14,6 @@ example functions:
 replace (Once "менее") "более" "менее менее"
 "более менее"
 
-use replaceGroup for dynamic replace with groups in the needle
 
 "\n" / "a\nbc\nde"
 ["a", "bc", "de"]

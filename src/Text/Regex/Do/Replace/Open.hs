@@ -31,8 +31,8 @@ module Text.Regex.Do.Replace.Open
     (Replace(..),
     defaultReplacer,
     getGroup,
-    replaceMatch
-    )
+    replaceMatch,
+    boundsOk)
     where
 
 import Text.Regex.Base.RegexLike as R
@@ -42,8 +42,6 @@ import Text.Regex.Do.Type.Do
 import Text.Regex.Do.Match.Result as R
 import Text.Regex.Do.Type.Convert
 import Text.Regex.Do.Type.Extract
-
-
 
 
 class Replace f repl body where
@@ -100,15 +98,25 @@ firstGroup (pl0:_) r1@(new0,a0) = acc $ replaceMatch pl0 (new0, acc1)
     another custom dynamic replacer could e.g.
     inspect all group matches before looking up a replacement.     -}
 defaultReplacer::Extract' a =>
-        Int         -- ^ group idx. 1-based
+        Int         -- ^ group idx. 0: full match, groups: 1.. see 'MatchArray'
         -> (a -> a) -- ^ (group match -> replacement) lookup
             -> GroupReplacer a
 defaultReplacer idx0 tweak0 = GroupReplacer fn1
-    where fn1 (ma0::MatchArray) acc0 = maybe acc0 fn1 mval1
-                where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
-                      mval1 = getGroup acc0 ma0 idx0
-                      fn1 str1 = replaceMatch pl1 (str2, acc0)
-                                 where str2 = tweak0 str1
+    where fn1 (ma0::MatchArray) acc0 =
+            if boundsOk ma0 idx0 then maybe acc0 fn1 mval1
+            else acc0
+            where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
+                  mval1 = getGroup acc0 ma0 idx0 
+                  fn1 str1 = replaceMatch pl1 (str2, acc0) 
+                             where str2 = tweak0 str1
+
+
+{- | check if specified group index is within 'MatchArray' bounds
+
+for use within 'GroupReplacer'
+-}
+boundsOk::MatchArray -> Int -> Bool
+boundsOk ma0 = inRange (bounds ma0)                         
 
 
 {- | get group content safely:
@@ -120,7 +128,7 @@ defaultReplacer idx0 tweak0 = GroupReplacer fn1
     -}
 getGroup::R.Extract a =>
     ReplaceAcc a -> MatchArray -> Int -> Maybe a
-getGroup acc0 ma0 idx0 = if idx0 < 1 || idx0 > P.length ma0 then Nothing     --  safety catch
+getGroup acc0 ma0 idx0 = if not (boundsOk ma0 idx0) then Nothing     --  safety catch
     else Just val1
     where pl1 = ma0 A.! idx0 :: (R.MatchOffset, R.MatchLength)
           pl2 = adjustPoslen pl1 acc0

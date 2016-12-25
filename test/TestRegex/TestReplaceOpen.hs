@@ -18,10 +18,15 @@ main = hspec $ do
             O.replace (Just [(4,3)::PosLen]) replacer ("abc 123 def"::Text) `shouldBe` ("abc [1-2-3] def"::Text)
           it "case 3" $
             O.replace ([[(4,3)::PosLen]]) replacer ("abc 123 def"::Text) `shouldBe` ("abc [1-2-3] def"::Text)
+          it "case 4" $
+            O.replace ([[]::[PosLen]]) replacer ("abc 123 def"::Text) `shouldBe` ("abc 123 def"::Text)
+          it "case 5" $
+            O.replace ([[(4,3)],[(8,3)],[(16,3)]]::[[PosLen]]) replacer ("abc 456 456 def 456"::Text) `shouldBe` ("abc 4 4 def 4"::Text)
 
 
 replacer::GroupReplacer Text
 replacer = defaultReplacer 1 tweak1
           where tweak1 str1 = case str1 of
                                 "123" -> "[1-2-3]"
+                                "456" -> "4"
                                 otherwise -> traceShow str1 "?"

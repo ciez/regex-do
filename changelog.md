@@ -1,3 +1,6 @@
+#####   3.2
+  fix bug in defaultReplacer  
+
 #####   3.1
   tidy up types: 
     
