@@ -1,11 +1,9 @@
 module Text.Regex.Do.Type.Extract where
 
 import Text.Regex.Base.RegexLike as R hiding (empty)
-import qualified Text.Regex.Base.RegexLike as R (empty)
 import Prelude as P
 import Data.ByteString as B
 import Data.Text as T hiding (empty)
-import qualified Data.Text as T (empty)
 import Text.Regex.Do.Type.Do
 
 
@@ -25,12 +23,6 @@ instance Extract' String where
 instance Extract' B.ByteString where
    concat' = B.concat
    len' = B.length
-
-
-instance Extract Text where
-    before = T.take
-    after = T.drop
-    empty = T.empty
 
 
 instance Extract' Text where
