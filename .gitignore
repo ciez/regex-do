@@ -1,0 +1,6 @@
+/.idea/**/*
+/.cabal-sandbox/**/*
+/dist/**/*
+/dist-doc/**/*
+*.log
+cabal.sandbox.config

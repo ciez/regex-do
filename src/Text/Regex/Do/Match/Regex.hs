@@ -4,12 +4,11 @@ module Text.Regex.Do.Match.Regex
 
 import qualified Text.Regex.Base.RegexLike as R
 import qualified Text.Regex.Do.Type.Reexport as R
+import Control.Monad.Fail
 import Data.ByteString
 import Text.Regex.Do.Type.Do hiding (Regex)
 import Text.Regex.Do.Match.Option
 import Data.List as L
-
-
 
 
 class Regex a where
@@ -32,7 +31,7 @@ instance Regex R.Regex where
    makeRegexOpt p0 _ _ = pure p0
 
 
-makeRegexOptsM::(Monad m, Opt_ a) =>
+makeRegexOptsM::(Monad m, Opt_ a, Control.Monad.Fail.MonadFail m) =>
     a -> [Comp] -> [Exec] ->
             m R.Regex
 makeRegexOptsM pat0 comp0 exec0 = rx1
@@ -63,3 +62,7 @@ instance Monad RegexResult where
     (>>=) (RegexResult (Left e1)) fn0 = RegexResult $ Left e1
     (>>=) (RegexResult (Right a0)) fn0 = fn0 a0
     fail s0 = RegexResult $ Left [s0]
+
+instance MonadFail RegexResult where
+    fail :: String -> RegexResult a
+    fail err0 = RegexResult $ Left [err0]
