@@ -1,5 +1,5 @@
 name:                regex-do
-version:             3.2.1
+version:             3.2.2
 synopsis:            PCRE wrapper
 description:         format, search, replace (String | ByteString) with PCRE regex. Utf8-safe
 author:              Imants Cekusins
