@@ -4,3 +4,5 @@
 /dist-doc/**/*
 *.log
 cabal.sandbox.config
+/dist-newstyle/
+/cabal.project.local
