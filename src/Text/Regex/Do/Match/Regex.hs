@@ -61,7 +61,6 @@ instance Applicative RegexResult where
 instance Monad RegexResult where
     (>>=) (RegexResult (Left e1)) fn0 = RegexResult $ Left e1
     (>>=) (RegexResult (Right a0)) fn0 = fn0 a0
-    fail s0 = RegexResult $ Left [s0]
 
 instance MonadFail RegexResult where
     fail :: String -> RegexResult a
