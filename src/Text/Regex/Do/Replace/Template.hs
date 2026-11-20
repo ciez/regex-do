@@ -35,7 +35,7 @@ import Prelude as P hiding ((<),(>))
 import Text.Regex.Do.Replace.Fast as S (replace)
 import Text.Regex.Do.Type.Convert
 import Data.ByteString as B
-import Data.Text as T
+import Data.Text as T hiding (show)
 
 
 type Formatable a = (Template a [a], Template a [(a,a)])
