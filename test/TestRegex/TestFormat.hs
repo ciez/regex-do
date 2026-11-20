@@ -6,7 +6,7 @@ import Text.Regex.Do.Pad
 import Data.String
 import Text.Regex.Do.Type.Convert
 import Data.ByteString
-import Data.Text as T
+import Data.Text as T hiding (show)
 import Prelude hiding ((<),(>))
 
 
